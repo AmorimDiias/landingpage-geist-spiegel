@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "AI Suite Também",
+  "version": "1.0.0",
+  "description": "Gere respostas com IA para comentários do YouTube Studio",
+  "permissions": [
+    "storage",
+    "scripting",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://studio.youtube.com/*",
+    "https://www.youtube.com/*"
+  ],
+  "action": {
+    "default_popup": "index.html"
+  },
+  "background": {
+    "service_worker": "assets/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://studio.youtube.com/*"],
+      "js": ["content/index.js"],
+      "css": ["content/style.css"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; connect-src 'self' https://*.puter.com wss://*.puter.com https://*.googleapis.com https://www.youtube.com https://*.youtube.com; frame-src 'self' https://*.puter.com;"
+  }
+}

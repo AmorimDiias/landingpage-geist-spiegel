@@ -1,0 +1,16 @@
+html, body {
+  width: 450px;
+  height: 600px; /* Altura fixa para garantir renderização */
+  margin: 0;
+  padding: 0;
+  background-color: #0f172a; /* Slate 900 */
+  color: #f8fafc;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
