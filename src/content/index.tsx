@@ -237,10 +237,74 @@ const injectButtons = () => {
 
       const context = extractContext(buttonsContainer as HTMLElement);
 
-      // ENVIA PARA O BACKGROUND
+      // Função helper para atualizar texto (para reuso)
+      const updateEditable = (text: string) => {
+        // Função recursiva para encontrar campo editável no Shadow DOM
+        const findEditable = (root: Element | ShadowRoot | null): HTMLElement | null => {
+          if (!root) return null;
+
+          // Lista de seletores para tentar
+          const selectors = [
+            '#contenteditable-textarea',
+            'textarea',
+            '[contenteditable="true"]',
+            '[contenteditable="plaintext-only"]',
+            'div[role="textbox"]',
+            '#input',
+            '.input-container textarea',
+            '.input-container [contenteditable]'
+          ];
+
+          for (const selector of selectors) {
+            const el = root.querySelector(selector);
+            if (el) {
+              return el as HTMLElement;
+            }
+          }
+
+          // Busca recursiva em elementos com Shadow DOM
+          const children = root.querySelectorAll('*');
+          for (const child of children) {
+            if (child.shadowRoot) {
+              const found = findEditable(child.shadowRoot);
+              if (found) return found;
+            }
+          }
+
+          return null;
+        };
+
+        // Tenta encontrar e escrever
+        const editable = findEditable(box.shadowRoot) || findEditable(box) || (buttonsContainer.parentElement && findEditable(buttonsContainer.parentElement));
+
+        if (editable) {
+          insertTextIntoYouTube(editable, text);
+          return true;
+        }
+        return false;
+      };
+
+      // 1. Feedback inicial imediato
+      updateEditable("Obtendo transcrição...");
+
+      // Listener temporário para atualização de progresso
+      const progressListener = (msg: { type: string }) => {
+        console.log('[AI Suite] fluxo de mensagens validado. Tipo:', msg.type);
+        if (msg.type === 'TRANSCRIPT_FETCHED') {
+          updateEditable("Transcrição obtida, gerando resposta com base na transcrição...");
+        } else if (msg.type === 'TRANSCRIPT_FAILED') {
+          updateEditable("Falha na transcrição, usando contexto básico...");
+        }
+      };
+
+      // Usa try/catch para garantir limpeza do listener
       try {
-        // Verifica Chrome API
-        let chromeObj = getChrome();
+        let chromeObj = getChrome(); // Re-obtain chrome object safely
+        if (chromeObj?.runtime?.onMessage) {
+          chromeObj.runtime.onMessage.addListener(progressListener);
+        }
+
+        // ENVIA PARA O BACKGROUND
         if (!chromeObj?.runtime?.sendMessage) {
           chromeObj = (window as unknown as { chrome: typeof chrome }).chrome;
         }
@@ -268,62 +332,8 @@ const injectButtons = () => {
 
 
         if (response && response.success) {
-          // Função recursiva para encontrar campo editável no Shadow DOM
-          const findEditable = (root: Element | ShadowRoot | null): HTMLElement | null => {
-            if (!root) return null;
-
-            // Lista de seletores para tentar
-            const selectors = [
-              '#contenteditable-textarea',
-              'textarea',
-              '[contenteditable="true"]',
-              '[contenteditable="plaintext-only"]',
-              'div[role="textbox"]',
-              '#input',
-              '.input-container textarea',
-              '.input-container [contenteditable]'
-            ];
-
-            for (const selector of selectors) {
-              const el = root.querySelector(selector);
-              if (el) {
-                return el as HTMLElement;
-              }
-            }
-
-            // Busca recursiva em elementos com Shadow DOM
-            const children = root.querySelectorAll('*');
-            for (const child of children) {
-              if (child.shadowRoot) {
-                const found = findEditable(child.shadowRoot);
-                if (found) return found;
-              }
-            }
-
-            return null;
-          };
-
-          // Tenta encontrar no shadowRoot do box
-          let editable = findEditable(box.shadowRoot);
-
-          // Se não encontrou, tenta no próprio box
-          if (!editable) {
-            editable = findEditable(box);
-          }
-
-          // Se ainda não encontrou, tenta buscar na página inteira perto do botão
-          if (!editable) {
-            const parent = buttonsContainer.parentElement;
-            if (parent) {
-              editable = findEditable(parent);
-            }
-          }
-
-          if (editable) {
-            insertTextIntoYouTube(editable, response.text);
-          } else {
+          if (!updateEditable(response.text)) {
             console.warn('[AI Suite] Campo de texto não encontrado, copiando para clipboard.');
-            // Fallback: copia para a área de transferência
             navigator.clipboard.writeText(response.text).then(() => {
               alert("Resposta gerada! O texto foi copiado para a área de transferência. Cole com Ctrl+V.");
             }).catch(() => {
@@ -338,6 +348,12 @@ const injectButtons = () => {
         console.error('[AI Suite] Erro:', err);
         alert("Erro de comunicação com a extensão. Tente recarregar a página.");
       } finally {
+        // Remove listener
+        const chromeObj = getChrome();
+        if (chromeObj?.runtime?.onMessage) {
+          chromeObj.runtime.onMessage.removeListener(progressListener);
+        }
+
         btn.style.opacity = "1";
         btn.style.cursor = "pointer";
         btn.innerHTML = originalIcon;

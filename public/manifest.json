@@ -10,7 +10,8 @@
   ],
   "host_permissions": [
     "https://studio.youtube.com/*",
-    "https://www.youtube.com/*"
+    "https://www.youtube.com/*",
+    "https://*.transcriptapi.com/*"
   ],
   "action": {
     "default_popup": "index.html"
@@ -24,8 +25,5 @@
       "js": ["content/index.js"],
       "css": ["content/style.css"]
     }
-  ],
-  "content_security_policy": {
-    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; connect-src 'self' https://*.puter.com wss://*.puter.com https://*.googleapis.com https://www.youtube.com https://*.youtube.com; frame-src 'self' https://*.puter.com;"
-  }
+  ]
 }

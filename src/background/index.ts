@@ -56,11 +56,84 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   if (request.type === 'GENERATE_REPLY') {
     chrome.storage.local.get(['generationMode'], (storageResult) => {
       const mode = (storageResult as { generationMode?: string }).generationMode || 'simple';
-      handleGen(request.context, mode).then(sendResponse);
+      handleGen(request.context, mode, _sender.tab?.id).then(sendResponse);
     });
     return true; // Mantém o canal de mensagem aberto para o async
   }
 });
+
+// --- 3a. HELPER PARA TRANSCRIÇÃO (TranscriptAPI) ---
+let transcriptCache = { videoId: null as string | null, text: "" };
+
+async function fetchExternalTranscript(videoId: string, tabId?: number): Promise<string> {
+  // a) Verifica cache e notifica
+  if (transcriptCache.videoId === videoId && transcriptCache.text) {
+    console.log('[Background] CACHE HIT - Usando transcrição em cache para:', videoId);
+    console.log('[Background] Economia: 0 creditos gastos nesta requisição.');
+    if (tabId) {
+      chrome.tabs.sendMessage(tabId, { type: 'TRANSCRIPT_FETCHED' }).catch(() => { });
+    }
+    return transcriptCache.text;
+  }
+
+  console.log('[Background] Buscando transcrição na TranscriptAPI para:', videoId);
+
+  try {
+    // b) Fetch na API (GET com video_url como query param)
+    const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+    const url = `https://transcriptapi.com/api/v2/youtube/transcript?video_url=${encodeURIComponent(videoUrl)}`;
+    console.log('[Background] URL utilizada:', url);
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer sk_xxARsOS29OtGy9RvluWL7kU8O20Eawb75eMaYqiU-CM',
+        'Accept': 'application/json'
+      }
+    });
+
+    console.log('[Background] Status da Resposta:', response.status);
+
+    if (!response.ok) {
+      console.error(`[Background] Erro na API Transcrição (Status: ${response.status})`);
+      return "";
+    }
+
+    const data = await response.json();
+
+    // d) Processa resposta (transcript pode ser array de objetos ou string)
+    let fullText = "";
+
+    if (Array.isArray(data.transcript)) {
+      fullText = data.transcript.map((s: any) => s.text).join(' ');
+    } else if (typeof data.transcript === 'string') {
+      fullText = data.transcript;
+    } else if (data.text) {
+      fullText = data.text;
+    }
+
+    if (!fullText) {
+      console.warn('[Background] Transcrição vazia retornada pela API.');
+      return "";
+    }
+
+    // e) Atualiza cache e notifica
+    transcriptCache = { videoId, text: fullText };
+
+    if (tabId) {
+      chrome.tabs.sendMessage(tabId, { type: 'TRANSCRIPT_FETCHED' }).catch(() => { });
+    }
+
+    // f) Log de validação
+    console.log('[ai suite test] transcricao capturada:', transcriptCache.text.slice(0, 50) + "...");
+
+    return fullText;
+
+  } catch (error) {
+    console.error('[Background] Falha de rede. Verifique se a extensão foi atualizada e a página recarregada. Detalhe:', (error as Error).message);
+    return "";
+  }
+}
 
 // --- 3. HELPER PARA CHAMADA API PUTER ---
 async function callPuterAI(prompt: string, authToken: string): Promise<string> {
@@ -97,7 +170,7 @@ async function callPuterAI(prompt: string, authToken: string): Promise<string> {
 }
 
 // --- 4. FLUXO DE GERAÇÃO (RESUMO -> RESPOSTA) ---
-async function handleGen(ctx: any, mode: string = 'simple') {
+async function handleGen(ctx: any, mode: string = 'simple', tabId?: number) {
   console.log(`[Background] Iniciando fluxo. Modo: ${mode}, Video: ${ctx.videoId}`);
 
   try {
@@ -113,38 +186,68 @@ async function handleGen(ctx: any, mode: string = 'simple') {
     const videoUrl = `https://www.youtube.com/watch?v=${ctx.videoId}`;
     const videoTitle = ctx.videoTitle || "Vídeo do YouTube";
 
-    // Transcrição vinda do Content Script (Recomendado)
-    const transcript = ctx.transcript || "";
+    // 2. Busca Transcrição (Nova Integração Exclusiva)
+    let transcript = "";
+    try {
+      // Passa o tabId para que o helper gerencie as mensagens de progresso
+      transcript = await fetchExternalTranscript(ctx.videoId, tabId);
+
+      if (!transcript && tabId) {
+        // Se retornou vazio, avisa falha
+        chrome.tabs.sendMessage(tabId, { type: 'TRANSCRIPT_FAILED' }).catch(() => { });
+      }
+    } catch (err) {
+      console.error('[Background] Falha crítica na transcrição, seguindo sem ela.', err);
+      if (tabId) chrome.tabs.sendMessage(tabId, { type: 'TRANSCRIPT_FAILED' }).catch(() => { });
+    }
+
+    // Limita para 15k chars para o prompt
+    const safeTranscript = transcript ? transcript.slice(0, 15000) : "";
 
     // ---------------------------------------------------------
-    // PASSO 1: GERAR O RESUMO DO VÍDEO (Primeiro Prompt)
+    // LOGICA DE CONTEXTO: TRANSCRICAO DIRETA vs RESUMO
     // ---------------------------------------------------------
-    let videoSummary = "Resumo não disponível.";
+    let contextoParaResposta = "";
 
-    if (mode === 'full') {
-      console.log('[Background] Passo 1: Gerando resumo do vídeo...');
+    if (safeTranscript) {
+      // Transcricao disponivel - pula Passo 1
+      console.log('[Background] Usando transcricao direta, pulando Passo 1 (Resumo)');
+      contextoParaResposta = safeTranscript;
+    } else {
+      // Transcricao ausente - recorre ao Passo 1 (Resumo)
+      console.log('[Background] Transcricao ausente, recorrendo ao Passo 1 (Resumo)');
 
-      const summaryPrompt = `
+      let videoSummary = "Resumo não disponível.";
+
+      if (mode === 'full') {
+        console.log('[Background] Passo 1: Gerando resumo do vídeo...');
+
+        const summaryPrompt = `
 TAREFA: Analisar o conteúdo do vídeo e gerar um resumo detalhado.
 
 DADOS DO VÍDEO:
 Título: "${videoTitle}"
 URL: ${videoUrl}
 
-${transcript ? `TRANSCRIÇÃO/LEGENDAS:\n"${transcript.slice(0, 15000)}"` : 'AVISO: Transcrição não fornecida. Tente inferir o conteúdo pelo título e URL se possível.'}
+AVISO: Transcrição não fornecida. Tente inferir o conteúdo pelo título e URL se possível.
 
 INSTRUÇÃO:
 Faça um resumo abrangente dos principais pontos abordados neste vídeo. Este resumo será usado para responder comentários de usuários. Foque nos argumentos principais, tom de voz e conclusões.
-      `.trim();
+        `.trim();
 
-      try {
-        videoSummary = await callPuterAI(summaryPrompt, authToken);
-        console.log('[Background] Resumo gerado com sucesso.');
-      } catch (err) {
-        console.error('[Background] Falha ao gerar resumo:', err);
-        videoSummary = "Erro ao gerar resumo do vídeo. Usando apenas título.";
+        try {
+          videoSummary = await callPuterAI(summaryPrompt, authToken);
+          console.log('[Background] Resumo gerado com sucesso.');
+        } catch (err) {
+          console.error('[Background] Falha ao gerar resumo:', err);
+          videoSummary = "Erro ao gerar resumo do vídeo. Usando apenas título.";
+        }
       }
+
+      contextoParaResposta = videoSummary;
     }
+
+    console.log('[Background] Contexto enviado para a resposta:', contextoParaResposta);
 
     // ---------------------------------------------------------
     // PASSO 2: GERAR A RESPOSTA AO COMENTÁRIO (Segundo Prompt)
@@ -153,12 +256,17 @@ Faça um resumo abrangente dos principais pontos abordados neste vídeo. Este re
 
     const globalPrompt = storage['globalPrompt'] || 'Você é um assistente útil. Responda ao comentário.';
 
+    // Define prefixo do contexto baseado na origem
+    const prefixoContexto = safeTranscript
+      ? "O texto abaixo é a transcrição literal do vídeo:"
+      : "Baseado no Resumo da IA:";
+
     const finalPrompt = `
 INSTRUÇÕES DO CANAL (Siga estritamente):
 ${globalPrompt}
 
-CONTEXTO DO CONTEÚDO (Baseado no Resumo da IA):
-${videoSummary}
+CONTEXTO DO CONTEÚDO (${prefixoContexto})
+${contextoParaResposta}
 
 DADOS DO VÍDEO:
 Título: "${videoTitle}"
@@ -169,7 +277,7 @@ COMENTÁRIO DO USUÁRIO:
 
 DIRETRIZ TÉCNICA DE FORMATO:
 - Responda diretamente ao usuário.
-- Seja cordial e relevante ao contexto do resumo acima.
+- Seja cordial e relevante ao contexto acima.
 - Retorne APENAS o texto da resposta, sem aspas ou prefixos.
     `.trim();
 
