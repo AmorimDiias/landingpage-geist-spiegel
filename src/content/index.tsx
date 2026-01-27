@@ -12,6 +12,15 @@ const MOUNT_POINT_ID = 'ai-suite-root';
 
 // 1. Mount the Hidden React Controller
 if (!document.getElementById(MOUNT_POINT_ID)) {
+  // Inject Font
+  if (!document.querySelector('#ai-suite-font')) {
+    const fontLink = document.createElement('link');
+    fontLink.id = 'ai-suite-font';
+    fontLink.href = 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap';
+    fontLink.rel = 'stylesheet';
+    document.head.appendChild(fontLink);
+  }
+
   const mountNode = document.createElement('div');
   mountNode.id = MOUNT_POINT_ID;
   document.body.appendChild(mountNode);

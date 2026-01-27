@@ -1,0 +1,472 @@
+/* Layout Base */
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  gap: 1rem;
+  animation: fadeIn 0.4s ease-out;
+  box-sizing: border-box;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Card Principal */
+.card {
+  background-color: rgba(15, 23, 42, 0.6); /* Mais escuro para contraste */
+  border: 1px solid rgba(51, 65, 85, 0.5);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Labels */
+.label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  display: block;
+  padding-left: 0.25rem;
+}
+
+/* Platform Link */
+.externalLink {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1rem;
+  background-color: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(51, 65, 85, 0.5);
+  border-radius: 0.75rem;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.externalLink:hover {
+  background-color: rgba(30, 41, 59, 0.8);
+  border-color: #6b4fe0;
+  transform: translateY(-1px);
+}
+
+.linkContent {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.iconBox {
+  width: 2rem;
+  height: 2rem;
+  background-color: rgba(107, 79, 224, 0.15);
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon {
+  width: 1rem;
+  height: 1rem;
+  color: #a78bfa;
+}
+
+.linkText {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.linkTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #f8fafc;
+  line-height: 1.25;
+}
+
+.linkSubtitle {
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.25;
+}
+
+.linkArrow {
+  color: #475569;
+  width: 1rem;
+  height: 1rem;
+  transition: color 0.2s;
+}
+
+.externalLink:hover .linkArrow {
+  color: #a78bfa;
+}
+
+/* File Input */
+.fileInputWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.uploadArea {
+  width: 100%;
+}
+
+.uploadLabel {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background-color: rgba(30, 41, 59, 0.3);
+  border: 1px dashed rgba(71, 85, 105, 0.6);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.uploadLabel:hover {
+  background-color: rgba(30, 41, 59, 0.5);
+  border-color: #94a3b8;
+}
+
+.uploadLabel.active {
+  background-color: rgba(16, 185, 129, 0.05);
+  border-color: #10b981;
+  border-style: solid;
+}
+
+.uploadLabel.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: rgba(15, 23, 42, 0.4);
+}
+
+.uploadIcon {
+  width: 2rem;
+  height: 2rem;
+  color: #64748b;
+  margin-bottom: 0.75rem;
+  transition: color 0.2s;
+}
+
+.uploadLabel.active .uploadIcon {
+  color: #10b981;
+}
+
+.uploadText {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 500;
+  text-align: center;
+}
+
+.uploadSubtext {
+  font-size: 0.65rem;
+  color: #10b981;
+  font-weight: 600;
+  margin-top: 0.5rem;
+  background-color: rgba(16, 185, 129, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+/* Checkbox */
+.checkboxLabel {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1rem;
+  background-color: rgba(30, 41, 59, 0.3);
+  border: 1px solid rgba(51, 65, 85, 0.5);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.checkboxLabel:hover {
+  border-color: #64748b;
+  background-color: rgba(30, 41, 59, 0.5);
+}
+
+.checkboxWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.checkbox {
+  appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid #475569;
+  border-radius: 0.35rem;
+  background-color: transparent;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.checkbox:checked {
+  background-color: #10b981;
+  border-color: #10b981;
+}
+
+.checkIcon {
+  pointer-events: none;
+  position: absolute;
+  width: 0.875rem;
+  height: 0.875rem;
+  color: #022c22;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.checkbox:checked + .checkIcon {
+  opacity: 1;
+}
+
+.checkboxText {
+  display: flex;
+  flex-direction: column;
+}
+
+.checkboxTitle {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-bottom: 0.125rem;
+}
+
+.checkboxSubtitle {
+  font-size: 0.65rem;
+  color: #64748b;
+}
+
+/* Status Bar */
+.statusBar {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 0.5rem;
+  background-color: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(51, 65, 85, 0.5);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.statusHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.statusLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.statusIcon {
+  width: 1rem;
+  height: 1rem;
+}
+.statusIcon.processing {
+  color: #10b981;
+  animation: spin 1s linear infinite;
+}
+.statusIcon.completed {
+  color: #10b981;
+}
+.statusIcon.error {
+  color: #f43f5e;
+}
+.statusIcon.paused {
+  color: #f59e0b;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.statusText {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.statusCounter {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-family: monospace;
+}
+
+.logMessage {
+  font-size: 0.75rem;
+  font-family: monospace;
+  color: #10b981;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.5rem;
+}
+
+.progressBarContainer {
+  height: 4px;
+  background-color: #334155;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background-color: #10b981;
+  transition: width 0.3s ease-out;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+.progressBar.error {
+  background-color: #f43f5e;
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+}
+
+/* Footer / Buttons */
+.footer {
+  margin-top: auto;
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+  box-sizing: border-box;
+  padding-top: 1rem;
+}
+
+.btnPrimary {
+  flex: 1;
+  height: 3rem; /* 48px */
+  border: none;
+  background-color: #059669 !important;
+  background: linear-gradient(135deg, #0e7490 0%, #059669 100%) !important;
+  border-radius: 0.75rem;
+  color: #fff !important;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(5, 150, 105, 0.4);
+  transition: all 0.2s;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+  box-shadow: 0 8px 10px -1px rgba(5, 150, 105, 0.5);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.5;
+  filter: grayscale(1);
+  cursor: not-allowed;
+  background: #334155 !important;
+  color: #94a3b8 !important;
+}
+
+.btnSecondary {
+  flex: 1;
+  height: 3rem;
+  background-color: rgba(245, 158, 11, 0.1) !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+  color: #fbbf24 !important;
+  border-radius: 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.btnSecondary:hover {
+  background-color: rgba(245, 158, 11, 0.2) !important;
+}
+
+.btnIcon {
+  width: 3rem;
+  height: 3rem;
+  background-color: rgba(30, 41, 59, 0.5) !important;
+  border: 1px solid rgba(51, 65, 85, 0.5) !important;
+  color: #94a3b8 !important;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.btnIcon:hover:not(:disabled) {
+  background-color: rgba(30, 41, 59, 0.8) !important;
+  border-color: #64748b !important;
+  color: #e2e8f0 !important;
+}
+
+.btnIcon:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.actionIcon {
+  width: 1rem;
+  height: 1rem;
+  fill: currentColor;
+}
+
+.trashIcon {
+  width: 1.125rem;
+  height: 1.125rem;
+}

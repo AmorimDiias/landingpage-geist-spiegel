@@ -60,6 +60,38 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
     });
     return true; // Mantém o canal de mensagem aberto para o async
   }
+
+  if (request.type === 'SHOW_NOTIFICATION') {
+    chrome.notifications.create({
+      type: 'basic',
+      iconUrl: 'icon128.png',
+      title: request.title || 'AI Suite',
+      message: request.message || 'Tarefa concluída com sucesso!'
+    });
+    return true;
+  }
+
+  if (request.action === 'downloadVideo') {
+    const filename = `Grok_Videos/${request.filename}.mp4`;
+    console.log(`[Background] Baixando vídeo: ${request.url} -> ${filename}`);
+
+    chrome.downloads.download({
+      url: request.url,
+      filename: filename,
+      conflictAction: 'overwrite'
+    }, (downloadId) => {
+      if (chrome.runtime.lastError) {
+        console.error(`[Background] Erro no download: ${chrome.runtime.lastError.message}`);
+      } else {
+      }
+    });
+    return true;
+  }
+
+  if (request.action === 'log') {
+    console.log(request.message);
+    return true;
+  }
 });
 
 // --- 3a. HELPER PARA TRANSCRIÇÃO (TranscriptAPI) ---

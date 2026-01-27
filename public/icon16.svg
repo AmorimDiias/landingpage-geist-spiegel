@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24">
+  <defs>
+    <linearGradient id="logo-gradient-16" x1="0" y1="0" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+  </defs>
+  <path
+    stroke="url(#logo-gradient-16)"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="2"
+    d="M13 10V3L4 14h7v7l9-11h-7z"
+  />
+</svg>

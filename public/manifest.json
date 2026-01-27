@@ -1,20 +1,35 @@
 {
   "manifest_version": 3,
-  "name": "AI Suite Também",
-  "version": "1.0.0",
-  "description": "Gere respostas com IA para comentários do YouTube Studio",
+  "name": "AI Suite",
+  "version": "1.1.0",
+  "description": "Gere respostas com IA para comentários do YouTube Studio e automatize geração de imagens no ImageFX",
   "permissions": [
     "storage",
     "scripting",
-    "activeTab"
+    "activeTab",
+    "downloads",
+    "notifications"
   ],
   "host_permissions": [
     "https://studio.youtube.com/*",
     "https://www.youtube.com/*",
-    "https://*.transcriptapi.com/*"
+    "https://*.transcriptapi.com/*",
+    "https://labs.google/*",
+    "https://aisandbox-pa.googleapis.com/*",
+    "https://grok.com/*"
   ],
   "action": {
-    "default_popup": "index.html"
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
   },
   "background": {
     "service_worker": "assets/background.js"
@@ -24,6 +39,16 @@
       "matches": ["https://studio.youtube.com/*"],
       "js": ["content/index.js"],
       "css": ["content/style.css"]
+    },
+    {
+      "matches": ["https://labs.google/*"],
+      "js": ["content/imagefx.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://grok.com/*"],
+      "js": ["content/grok.js"],
+      "run_at": "document_idle"
     }
   ]
 }
