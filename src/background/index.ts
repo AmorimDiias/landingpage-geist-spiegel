@@ -68,7 +68,6 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
       title: request.title || 'AI Suite',
       message: request.message || 'Tarefa concluída com sucesso!'
     });
-    return true;
   }
 
   if (request.action === 'downloadVideo') {
@@ -82,7 +81,10 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
     }, (downloadId) => {
       if (chrome.runtime.lastError) {
         console.error(`[Background] Erro no download: ${chrome.runtime.lastError.message}`);
+        sendResponse({ success: false, error: chrome.runtime.lastError.message });
       } else {
+        console.log(`[Background] Download iniciado: ${downloadId}`);
+        sendResponse({ success: true, downloadId });
       }
     });
     return true;
@@ -90,7 +92,6 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 
   if (request.action === 'log') {
     console.log(request.message);
-    return true;
   }
 });
 
