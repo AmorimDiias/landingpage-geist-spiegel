@@ -46,6 +46,11 @@
       "run_at": "document_idle"
     },
     {
+      "matches": ["https://labs.google/*"],
+      "js": ["content/whisk.js"],
+      "run_at": "document_idle"
+    },
+    {
       "matches": ["https://grok.com/*"],
       "js": ["content/grok.js"],
       "run_at": "document_idle"

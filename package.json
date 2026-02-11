@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && vite build -c vite.background.config.ts && vite build -c vite.content.config.ts && vite build -c vite.imagefx.config.ts && vite build -c vite.grok.config.ts",
+    "build": "tsc -b && vite build && vite build -c vite.background.config.ts && vite build -c vite.content.config.ts && vite build -c vite.imagefx.config.ts && vite build -c vite.grok.config.ts && vite build -c vite.whisk.config.ts",
     "lint": "eslint .",
     "preview": "vite preview"
   },

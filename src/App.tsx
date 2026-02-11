@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import puter from './lib/puter-web';
 import './App.css';
-import { Zap, HelpCircle, LogIn, CheckCircle2, AlertCircle, FileText, Image, MessageSquare, Loader2, Video } from 'lucide-react';
+import { Zap, HelpCircle, LogIn, CheckCircle2, AlertCircle, FileText, Image, MessageSquare, Loader2, Video, Wand2 } from 'lucide-react';
 import { ImageFXAutomator } from './components/ImageFXAutomator';
 import { GrokAutomator } from './components/GrokAutomator';
+import { WhiskAutomator } from './components/WhiskAutomator';
 
-type ActiveTab = 'youtube' | 'imagefx' | 'grok';
+type ActiveTab = 'youtube' | 'imagefx' | 'grok' | 'whisk';
 
 function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('youtube');
@@ -173,6 +174,19 @@ function App() {
           <Video className={`w-3.5 h-3.5 ${activeTab === 'grok' ? 'text-white' : 'text-slate-500'}`} />
           Grok
         </button>
+        <button
+          onClick={() => setActiveTab('whisk')}
+          className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-bold uppercase tracking-wide transition-all duration-300 ${activeTab === 'whisk'
+            ? 'text-white shadow-lg'
+            : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/40'
+            }`}
+        >
+          {activeTab === 'whisk' && (
+            <div className="absolute inset-0 bg-gradient-to-r from-[#6b4fe0] to-[#3c82f6] rounded-lg -z-10 animate-in zoom-in-95 duration-200" />
+          )}
+          <Wand2 className={`w-3.5 h-3.5 ${activeTab === 'whisk' ? 'text-white' : 'text-slate-500'}`} />
+          Whisk
+        </button>
       </div>
 
       {/* CONTENT AREA */}
@@ -315,6 +329,9 @@ function App() {
 
         {/* Grok Automator Content */}
         {activeTab === 'grok' && <GrokAutomator />}
+
+        {/* Whisk Automator Content */}
+        {activeTab === 'whisk' && <WhiskAutomator />}
       </div>
     </div>
   )
