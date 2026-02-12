@@ -248,6 +248,9 @@ type GenerationResult = 'success' | 'retry' | 'skip' | 'fatal_error';
 const waitForGeneration = async (initialImages: HTMLImageElement[], timeout = 90000): Promise<{ status: 'success' | 'timeout'; newImages: HTMLImageElement[] }> => {
   const start = Date.now();
   const initialSrcs = new Set(initialImages.map(img => img.src));
+  let firstImageDetectedTime: number | null = null;
+  const EXPECTED_COUNT = 2;
+  const STABILITY_TIMEOUT = 20000; // Tempo extra para aguardar a segunda imagem
 
   console.log(`[Whisk] Aguardando geração... (${initialImages.length} imagens pré-existentes)`);
 
@@ -256,24 +259,42 @@ const waitForGeneration = async (initialImages: HTMLImageElement[], timeout = 90
     const newImages = currentImages.filter(img => !initialSrcs.has(img.src));
 
     if (newImages.length > 0) {
-      console.log(`[Whisk] ${newImages.length} nova(s) imagem(ns) detectada(s). Aguardando carregamento completo...`);
-
-      const loaded = await waitForAllImagesLoaded(newImages);
-      if (loaded) {
-        console.log(`[Whisk] Todas as ${newImages.length} imagens carregadas.`);
-
-        await delay(500);
-        const finalImages = getGeneratedImages();
-        const finalNew = finalImages.filter(img => !initialSrcs.has(img.src));
-
-        if (finalNew.length > newImages.length) {
-          console.log(`[Whisk] Mais imagens aparecendo (${finalNew.length}), aguardando…`);
-          await waitForAllImagesLoaded(finalNew);
-        }
-
-        const readyImages = getGeneratedImages().filter(img => !initialSrcs.has(img.src));
-        return { status: 'success', newImages: readyImages };
+      // Ignorar imagens que aparecem muito rápido (provavelmente da geração anterior)
+      // Whisk leva pelo menos 5-10s para gerar. Se aparecer em < 4s, é lixo anterior.
+      if (Date.now() - start < 4000) {
+        console.warn(`[Whisk] Imagens detectadas muito cedo (${Date.now() - start}ms). Ignorando como resquício anterior...`);
+        newImages.forEach(img => initialSrcs.add(img.src));
+        continue;
       }
+
+      if (firstImageDetectedTime === null) {
+        firstImageDetectedTime = Date.now();
+        console.log(`[Whisk] Primeira imagem detectada. Aguardando completude do par (Total esperadas: ${EXPECTED_COUNT})...`);
+      }
+
+      // Se já temos as 2 (ou mais) imagens esperadas
+      if (newImages.length >= EXPECTED_COUNT) {
+        console.log(`[Whisk] ${newImages.length} imagens detectadas (Par completo). Aguardando carregamento...`);
+        const loaded = await waitForAllImagesLoaded(newImages);
+        if (loaded) {
+          // Double check para garantir que não chegaram mais no último milissegundo
+          await delay(500);
+          const finalImages = getGeneratedImages();
+          const finalNew = finalImages.filter(img => !initialSrcs.has(img.src));
+          return { status: 'success', newImages: finalNew };
+        }
+      }
+
+      // Se passou muito tempo desde a primeira imagem e a segunda não veio
+      if (firstImageDetectedTime !== null && (Date.now() - firstImageDetectedTime > STABILITY_TIMEOUT)) {
+        console.warn(`[Whisk] Timeout de estabilidade (${STABILITY_TIMEOUT}ms) expirado. Prosseguindo com ${newImages.length} imagens.`);
+        await waitForAllImagesLoaded(newImages);
+        return { status: 'success', newImages };
+      }
+
+      // Ainda aguardando a segunda imagem...
+      await delay(500);
+      continue;
     }
 
     await delay(500);
