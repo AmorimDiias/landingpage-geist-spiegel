@@ -180,13 +180,13 @@ const validateImage = async (blob: Blob): Promise<boolean> => {
 
     // Rejeitar apenas se houver barras SIMÉTRICAS (Evita falsos positivos em céu noturno ou neve)
     if (topBars === 3 && bottomBars === 3) {
-      console.warn('[Whisk] Imagem rejeitada: Letterbox (Barras Horizontais)');
-      return false;
+      console.warn('[Whisk] Aviso: Letterbox detectado (Barras Horizontais). Imagem mantida para evitar loop de retry.');
+      return true; // Alterado de false para true
     }
 
     if (leftBars === 3 && rightBars === 3) {
-      console.warn('[Whisk] Imagem rejeitada: Pillarbox (Barras Verticais)');
-      return false;
+      console.warn('[Whisk] Aviso: Pillarbox detectado (Barras Verticais). Imagem mantida para evitar loop de retry.');
+      return true; // Alterado de false para true
     }
 
     return true;
@@ -275,10 +275,10 @@ const downloadImages = async (originalPrompt: string, downloadMode: DownloadMode
 
 type GenerationResult = 'success' | 'retry' | 'skip' | 'fatal_error';
 
-const waitForGeneration = async (timeout = 120000): Promise<{ status: 'success' | 'timeout'; newImages: HTMLImageElement[] }> => {
+const waitForGeneration = async (excludedSrcs: Set<string>, timeout = 120000): Promise<{ status: 'success' | 'timeout'; newImages: HTMLImageElement[] }> => {
   const EXPECTED_COUNT = 2;
 
-  console.log(`[Whisk] Aguardando geração de exatamente ${EXPECTED_COUNT} novas imagens...`);
+  console.log(`[Whisk] Aguardando geração de imagens...`);
 
   return new Promise((resolve) => {
     let resolved = false;
@@ -286,38 +286,28 @@ const waitForGeneration = async (timeout = 120000): Promise<{ status: 'success' 
     const checkCondition = async () => {
       if (resolved) return;
 
-      const newImages = getGeneratedImages(false); // Ignora as marcadas como processadas
-
-      // Filtro de segurança simplificado (já confiamos na marcação de processados)
-      const validImages = newImages;
+      const allCandidates = getGeneratedImages(false);
+      const validImages = allCandidates.filter(img => !excludedSrcs.has(img.src));
 
       if (validImages.length >= EXPECTED_COUNT) {
         console.log(`[Whisk] ${validImages.length} novas imagens detectadas. Verificando carregamento...`);
-
-        // Aguarda carregamento total
         const allLoaded = await waitForAllImagesLoaded(validImages);
 
         if (allLoaded && !resolved) {
-          // Verificação final
           resolved = true;
           observer.disconnect();
-
-          // Delay removido para agilidade imediata
+          clearInterval(poller);
           resolve({ status: 'success', newImages: validImages });
         }
       }
     };
 
     const observer = new MutationObserver((mutations) => {
-      // Otimização: Só verifique se houver nós adicionados ou atributos (src) alterados
       const relevantMutation = mutations.some(m =>
         m.type === 'childList' && m.addedNodes.length > 0 ||
         m.type === 'attributes' && m.attributeName === 'src'
       );
-
-      if (relevantMutation) {
-        checkCondition();
-      }
+      if (relevantMutation) checkCondition();
     });
 
     observer.observe(document.body, {
@@ -327,20 +317,21 @@ const waitForGeneration = async (timeout = 120000): Promise<{ status: 'success' 
       attributeFilter: ['src', 'class']
     });
 
-    // Fallback de polling (caso o MutationObserver falhe em capturar algo específico)
     const poller = setInterval(() => {
       if (!resolved) checkCondition();
       else clearInterval(poller);
     }, 2000);
 
-    // Timeout Global
     setTimeout(() => {
       if (!resolved) {
         resolved = true;
         observer.disconnect();
         clearInterval(poller);
-        const finalImages = getGeneratedImages(false);
-        console.warn(`[Whisk] Timeout! Encontradas: ${finalImages.length}`);
+
+        const finalCandidates = getGeneratedImages(false);
+        const finalImages = finalCandidates.filter(img => !excludedSrcs.has(img.src));
+
+        console.warn(`[Whisk] Tempo limite atingido. Novas encontradas: ${finalImages.length}`);
         resolve({ status: 'timeout', newImages: finalImages });
       }
     }, timeout);
@@ -358,52 +349,47 @@ const runPrompt = async (
     return 'retry';
   }
 
-  // 1. Marcar imagens existentes como processadas para não confundir
+  // 1. Snapshot do estado atual (Imagens existentes)
   const existingImages = getGeneratedImages(true);
+  const existingSrcs = new Set(existingImages.map(img => img.src));
   existingImages.forEach(img => img.setAttribute('data-whisk-processed', 'true'));
-  console.log(`[Whisk] Marcação: ${existingImages.length} imagens antigas marcadas como processadas.`);
+
+  console.log(`[Whisk] Estado inicial: ${existingImages.length} imagens ignoradas.`);
 
   const promptToInsert = extractPromptValue(originalPrompt);
-  console.log(`[Whisk] Inserindo prompt: "${promptToInsert}"`);
 
   textarea.focus();
   setNativeTextareaValue(textarea, promptToInsert);
   await delay(500);
 
   const submitBtn = findSubmitButton();
-  if (!submitBtn) {
-    console.error('[Whisk] Botão de envio não encontrado');
-    return 'retry';
-  }
+  if (!submitBtn) return 'retry';
 
   if (submitBtn.disabled) {
-    console.log('[Whisk] Botão desabilitado, aguardando…');
     await delay(1000);
-
-    if (submitBtn.disabled) {
-      console.error('[Whisk] Botão ainda desabilitado');
-      return 'retry';
-    }
+    if (submitBtn.disabled) return 'retry';
   }
 
   submitBtn.click();
-  console.log(`[Whisk] Solicitando geração...`);
-
-  // Como clicamos, esperamos que o input limpe ou o botão desabilite.
+  console.log(`[Whisk] Gerando...`);
   await delay(1000);
 
-  // 2. Aguarda estritamente 2 novas imagens
-  const { status, newImages } = await waitForGeneration(120000); // 2 minutos tolerancia
+  // 2. Aguarda novas imagens
+  const { status, newImages } = await waitForGeneration(existingSrcs, 120000);
 
-  if (status === 'timeout' && newImages.length < 2) {
-    console.warn('[Whisk] Timeout na geração (Imagens insuficientes)');
+  if (status === 'timeout' && newImages.length === 0) {
+    console.warn('[Whisk] Timeout na geração (Nenhuma imagem nova encontrada)');
     return 'retry';
+  }
+
+  if (status === 'timeout') {
+    console.log(`[Whisk] Timeout, mas prosseguindo com ${newImages.length} imagens encontradas.`);
   }
 
   if (downloadMode !== 'none') {
     const success = await downloadImages(originalPrompt, downloadMode, promptIndex, newImages);
     if (!success) {
-      console.warn('[Whisk] Todas as imagens falharam na validação (Barras detectadas). Retentando prompt...');
+      console.warn('[Whisk] Falha no download.');
       return 'retry';
     }
   } else {

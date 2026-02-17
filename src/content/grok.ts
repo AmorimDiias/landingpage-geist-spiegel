@@ -515,6 +515,14 @@ interface ProcessResult {
           log(`Erro na mensagem: ${chrome.runtime.lastError.message}`);
 
           try {
+            const nativeBtn = document.querySelector(SELECTORS.DOWNLOAD_BTN) as HTMLElement;
+            if (nativeBtn) {
+              log('Tentando download via botão nativo...');
+              nativeBtn.click();
+              resolve(true);
+              return;
+            }
+
             log('Tentando download via link direto...');
             const a = document.createElement('a');
             a.href = videoSrc;
@@ -685,7 +693,23 @@ interface ProcessResult {
     await robustSleep(1000);
 
     await findAndClickSubmit();
-    await robustSleep(3000);
+
+    // Verificação de segurança: Se o vídeo não iniciar automaticamente
+    // Procuramos o botão "Fazer vídeo" que aparece sobre a imagem
+    await robustSleep(2000);
+    if (!isLoading()) {
+      log('Loading não detectado. Verificando botão "Fazer vídeo"...');
+      const forceBtn = document.querySelector(SELECTORS.SUBMIT_GENERATE);
+      if (forceBtn) {
+        log('Botão "Fazer vídeo" encontrado e clicado.');
+        (forceBtn as HTMLElement).click();
+        await robustSleep(2000);
+      }
+    } else {
+      log('Loading detectado - Vídeo iniciou automaticamente.');
+    }
+
+    await robustSleep(1000);
 
     const normalVideo = await waitForGeneration(false, previousVideoSrc);
     let finalSrc = normalVideo.src;
