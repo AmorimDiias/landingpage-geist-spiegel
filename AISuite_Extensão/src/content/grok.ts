@@ -40,7 +40,7 @@ interface ProcessResult {
 
   const SELECTORS = {
     INPUT: 'input[type="file"][accept*="image"], input[name="files"]',
-    SUBMIT_GENERATE: 'button[aria-label="Fazer vídeo"]:not([disabled])',
+    SUBMIT_GENERATE: 'button[aria-label="submeter"]:not([disabled]), button[aria-label="Fazer vídeo"]:not([disabled])',
     SUBMIT_SEND: 'button[aria-label="Enviar"]:not([disabled])',
     SUBMIT_ANY: 'button[type="submit"]:not([disabled])',
     LOADING_CANVAS: 'canvas',
@@ -695,15 +695,24 @@ interface ProcessResult {
     await findAndClickSubmit();
 
     // Verificação de segurança: Se o vídeo não iniciar automaticamente
-    // Procuramos o botão "Fazer vídeo" que aparece sobre a imagem
+    // Procuramos o botão de submit (aria-label="submeter" ou type="submit")
     await robustSleep(2000);
     if (!isLoading()) {
-      log('Loading não detectado. Verificando botão "Fazer vídeo"...');
-      const forceBtn = document.querySelector(SELECTORS.SUBMIT_GENERATE);
-      if (forceBtn) {
-        log('Botão "Fazer vídeo" encontrado e clicado.');
-        (forceBtn as HTMLElement).click();
-        await robustSleep(2000);
+      log('Loading não detectado. Procurando botão de submit...');
+      const submitSelectors = [SELECTORS.SUBMIT_GENERATE, SELECTORS.SUBMIT_SEND, SELECTORS.SUBMIT_ANY];
+      let clicked = false;
+      for (const sel of submitSelectors) {
+        const forceBtn = document.querySelector(sel) as HTMLElement;
+        if (forceBtn && !((forceBtn as HTMLButtonElement).disabled)) {
+          log(`Botão de submit encontrado (${sel}) e clicado.`);
+          forceBtn.click();
+          clicked = true;
+          await robustSleep(2000);
+          break;
+        }
+      }
+      if (!clicked) {
+        log('Nenhum botão de submit encontrado. Aguardando início automático...');
       }
     } else {
       log('Loading detectado - Vídeo iniciou automaticamente.');
