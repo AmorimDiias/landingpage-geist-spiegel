@@ -55,6 +55,11 @@ interface ProcessResult {
     ERROR_TEXT: '.text-error, .text-destructive'
   };
 
+  // Seletores adicionais para localizar o botão de submit via SVG (up-arrow)
+  const SUBMIT_SVG_PATH_FRAGMENTS = ['M6 11L12 5', 'M12 5V19', 'M18 11'];
+  const MAX_SUBMIT_ATTEMPTS = 10;
+  const SUBMIT_VERIFY_TIMEOUT = 6000;
+
   const FATAL_ERROR_KEYWORDS = ['banned', 'suspended', 'account', 'conta suspensa', 'permanently'];
   const SKIP_ERROR_KEYWORDS = ['policy', 'diretrizes', 'guidelines', 'content policy', 'violação', 'violation', 'inappropriate'];
 
@@ -367,19 +372,95 @@ interface ProcessResult {
     return true;
   };
 
-  const findAndClickSubmit = async (): Promise<boolean> => {
-    const promptTextarea = document.querySelector('textarea[aria-label="Faça um vídeo"], textarea[placeholder*="personalizar"]') as HTMLTextAreaElement;
-    const hasPrompt = promptTextarea && promptTextarea.value.trim().length > 0;
+  /**
+   * Localiza o botão de submit usando múltiplas estratégias:
+   * 1. Seletores CSS (aria-label, type)
+   * 2. Texto do botão (gerar, iniciar, etc.)
+   * 3. SVG path (seta para cima)
+   */
+  const findSubmitButton = (): HTMLButtonElement | null => {
+    // Estratégia 1: seletores diretos por aria-label e type
+    const cssSelectors = [
+      'button[aria-label="submeter"]:not([disabled])',
+      'button[aria-label="Fazer vídeo"]:not([disabled])',
+      'button[aria-label="Enviar"]:not([disabled])',
+      'button[aria-label="Submit"]:not([disabled])',
+      'button[aria-label="Generate"]:not([disabled])',
+      'button[aria-label="Gerar"]:not([disabled])',
+      'button[aria-label="Iniciar"]:not([disabled])',
+      'button[type="submit"]:not([disabled])',
+    ];
 
-    if (!hasPrompt) {
-      log('Sem prompt - Grok inicia automaticamente após upload da imagem');
-      return true;
+    for (const sel of cssSelectors) {
+      try {
+        const btn = document.querySelector(sel) as HTMLButtonElement;
+        if (btn && !btn.disabled && btn.isConnected) {
+          return btn;
+        }
+      } catch { /* ignore */ }
     }
 
-    log('Prompt detectado - aguardando botão de envio...');
+    // Estratégia 2: texto do botão
+    const textKeywords = ['gerar', 'iniciar', 'submit', 'enviar', 'fazer vídeo', 'generate', 'start', 'criar'];
+    const allBtns = Array.from(document.querySelectorAll('button:not([disabled])')) as HTMLButtonElement[];
 
-    const timeout = Date.now() + 20000;
-    while (Date.now() < timeout) {
+    for (const btn of allBtns) {
+      if (btn.disabled || !btn.isConnected) continue;
+      const text = (btn.textContent || btn.getAttribute('aria-label') || '').toLowerCase().trim();
+      if (textKeywords.some(kw => text.includes(kw))) {
+        return btn;
+      }
+    }
+
+    // Estratégia 3: botão type="submit" com SVG de seta para cima
+    const submitBtns = Array.from(document.querySelectorAll('button[type="submit"]:not([disabled])')) as HTMLButtonElement[];
+    for (const btn of submitBtns) {
+      if (btn.disabled || !btn.isConnected) continue;
+      const paths = Array.from(btn.querySelectorAll('path'));
+      for (const path of paths) {
+        const d = path.getAttribute('d') || '';
+        if (SUBMIT_SVG_PATH_FRAGMENTS.some(frag => d.includes(frag))) {
+          log('Botão submit encontrado via SVG path (seta para cima)');
+          return btn;
+        }
+      }
+    }
+
+    // Estratégia 4: qualquer button[type="submit"] visível (último recurso)
+    for (const btn of submitBtns) {
+      if (!btn.disabled && btn.isConnected && btn.offsetParent !== null) {
+        log('Botão submit encontrado via fallback genérico');
+        return btn;
+      }
+    }
+
+    return null;
+  };
+
+  /**
+   * Verifica se o submit funcionou aguardando o início do loading ou aparecimento de vídeo.
+   */
+  const verifySubmitWorked = async (timeout: number): Promise<boolean> => {
+    const start = Date.now();
+    while (Date.now() - start < timeout) {
+      if (shouldStop) return false;
+      if (isLoading()) return true;
+      // Vídeo apareceu muito rapidamente (cache ou resposta imediata)
+      const sdVideo = document.querySelector(SELECTORS.VIDEO_SD) as HTMLVideoElement | null;
+      if (sdVideo?.src?.startsWith('http') && sdVideo.duration > 0) return true;
+      await robustSleep(200);
+    }
+    return false;
+  };
+
+  /**
+   * Clica no botão de submit com múltiplas estratégias e verifica se funcionou.
+   * Retorna quando o loading é confirmado ou lança erro após esgotar tentativas.
+   */
+  const robustClickSubmit = async (): Promise<void> => {
+    log('Iniciando clique robusto no botão de submit...');
+
+    for (let attempt = 1; attempt <= MAX_SUBMIT_ATTEMPTS; attempt++) {
       if (shouldStop) throw new Error('Parado pelo usuário');
 
       const errorCheck = checkForUIErrors();
@@ -387,20 +468,77 @@ interface ProcessResult {
         throw new Error(`Erro detectado antes do submit: ${errorCheck.message}`);
       }
 
-      const selectors = [SELECTORS.SUBMIT_GENERATE, SELECTORS.SUBMIT_SEND, SELECTORS.SUBMIT_ANY];
-      for (const sel of selectors) {
-        const btn = document.querySelector(sel) as HTMLButtonElement;
-        if (btn && !btn.disabled) {
-          log(`Clicando em: ${sel}`);
-          btn.click();
-          return true;
-        }
+      // Se já iniciou (race condition: loading começou antes do clique)
+      if (isLoading()) {
+        log('Loading já detectado antes do clique — submit não necessário.');
+        return;
       }
 
-      await robustSleep(500);
+      log(`Tentativa de submit ${attempt}/${MAX_SUBMIT_ATTEMPTS}...`);
+
+      const btn = findSubmitButton();
+
+      if (btn) {
+        log(`Botão encontrado: aria-label="${btn.getAttribute('aria-label')}" type="${btn.type}" text="${btn.textContent?.trim().slice(0, 30)}"`);
+
+        // Estratégia A: click direto
+        btn.scrollIntoView({ behavior: 'instant', block: 'center' });
+        await robustSleep(100);
+        btn.click();
+
+        if (await verifySubmitWorked(SUBMIT_VERIFY_TIMEOUT)) {
+          log('Submit confirmado via click() direto!');
+          return;
+        }
+
+        // Estratégia B: simulateFullClick (pointer + mouse events)
+        log('Click direto não iniciou geração. Tentando simulateFullClick...');
+        await simulateFullClick(btn);
+
+        if (await verifySubmitWorked(SUBMIT_VERIFY_TIMEOUT)) {
+          log('Submit confirmado via simulateFullClick!');
+          return;
+        }
+
+        // Estratégia C: Enter via teclado no botão
+        log('simulateFullClick não iniciou. Tentando Enter no botão...');
+        btn.focus();
+        btn.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', keyCode: 13, bubbles: true, cancelable: true }));
+        btn.dispatchEvent(new KeyboardEvent('keypress', { key: 'Enter', keyCode: 13, bubbles: true, cancelable: true }));
+        btn.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', keyCode: 13, bubbles: true, cancelable: true }));
+
+        if (await verifySubmitWorked(SUBMIT_VERIFY_TIMEOUT)) {
+          log('Submit confirmado via Enter no botão!');
+          return;
+        }
+
+        // Estratégia D: submit do form pai
+        const form = btn.closest('form');
+        if (form) {
+          log('Enter não iniciou. Tentando form.requestSubmit() / submit...');
+          try {
+            form.requestSubmit(btn);
+          } catch {
+            form.dispatchEvent(new SubmitEvent('submit', { bubbles: true, cancelable: true, submitter: btn }));
+          }
+
+          if (await verifySubmitWorked(SUBMIT_VERIFY_TIMEOUT)) {
+            log('Submit confirmado via form submit!');
+            return;
+          }
+        }
+
+      } else {
+        log(`Botão de submit não encontrado na tentativa ${attempt}. Aguardando...`);
+      }
+
+      // Backoff progressivo: 1s, 1.5s, 2s, 2.5s...
+      const backoff = Math.min(1000 + (attempt - 1) * 500, 4000);
+      log(`Tentativa ${attempt} falhou. Aguardando ${backoff}ms antes da próxima...`);
+      await robustSleep(backoff);
     }
 
-    throw new Error('Botão de envio não disponível após timeout');
+    throw new Error(`Não foi possível iniciar a geração após ${MAX_SUBMIT_ATTEMPTS} tentativas de submit`);
   };
 
   // ============================
@@ -690,35 +828,13 @@ interface ProcessResult {
     }
 
     await uploadFile(fileData);
-    await robustSleep(1000);
+    // Pausa curta para o React processar o upload e habilitar o botão
+    await robustSleep(1500);
 
-    await findAndClickSubmit();
+    await robustClickSubmit();
 
-    // Verificação de segurança: Se o vídeo não iniciar automaticamente
-    // Procuramos o botão de submit (aria-label="submeter" ou type="submit")
-    await robustSleep(2000);
-    if (!isLoading()) {
-      log('Loading não detectado. Procurando botão de submit...');
-      const submitSelectors = [SELECTORS.SUBMIT_GENERATE, SELECTORS.SUBMIT_SEND, SELECTORS.SUBMIT_ANY];
-      let clicked = false;
-      for (const sel of submitSelectors) {
-        const forceBtn = document.querySelector(sel) as HTMLElement;
-        if (forceBtn && !((forceBtn as HTMLButtonElement).disabled)) {
-          log(`Botão de submit encontrado (${sel}) e clicado.`);
-          forceBtn.click();
-          clicked = true;
-          await robustSleep(2000);
-          break;
-        }
-      }
-      if (!clicked) {
-        log('Nenhum botão de submit encontrado. Aguardando início automático...');
-      }
-    } else {
-      log('Loading detectado - Vídeo iniciou automaticamente.');
-    }
-
-    await robustSleep(1000);
+    // Pequena margem antes de iniciar a detecção de geração
+    await robustSleep(500);
 
     const normalVideo = await waitForGeneration(false, previousVideoSrc);
     let finalSrc = normalVideo.src;
@@ -885,6 +1001,6 @@ interface ProcessResult {
     }
   });
 
-  log('Script inicializado v2.0 - Retry Logic Ativo');
+  log('Script inicializado v2.1 - RobustClickSubmit + Multi-Strategy Submit Ativo');
 
 })();
