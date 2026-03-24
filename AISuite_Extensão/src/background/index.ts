@@ -52,6 +52,26 @@
 })();
 
 // --- 2. LISTENERS ---
+chrome.downloads.onDeterminingFilename.addListener((_downloadItem, suggest) => {
+  // Use a string to check if the download originates from grok or is a generic download we want to intercept
+  // A URL check is not always bulletproof for data URLs or blob URLs from content scripts, 
+  // but we mostly rely on the fact that `nextDownloadName` is set specifically for our grok process.
+  chrome.storage.local.get(['nextDownloadName'], (result: any) => {
+    if (result.nextDownloadName) {
+      console.log(`[Background] Renomeando arquivo Grok: ${result.nextDownloadName}`);
+      suggest({
+        filename: result.nextDownloadName as string,
+        conflictAction: 'uniquify'
+      });
+      // Remove it after using to avoid side-effects on other downloads
+      chrome.storage.local.remove('nextDownloadName');
+    } else {
+      suggest();
+    }
+  });
+  return true; // Keep the message channel open for async suggest
+});
+
 chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   if (request.type === 'GENERATE_REPLY') {
     chrome.storage.local.get(['generationMode'], (storageResult) => {
