@@ -394,47 +394,6 @@
     }
     .device-icon svg { width: 18px; height: 18px; flex-shrink: 0; }
 
-    /* ── 3. LEAD MAGNET SPLIT ────────────────── */
-    .lead-split {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: clamp(32px, 5vw, 60px);
-      align-items: center;
-    }
-    .lead-content {
-      background: var(--bg-2);
-      border: 1px solid var(--border);
-      border-top: 2px solid var(--red);
-      padding: clamp(32px, 5vw, 52px);
-    }
-    .lead-content .eyebrow { margin-bottom: 16px; }
-    .lead-title { margin: 0 0 10px; }
-    .lead-content p { max-width: 44ch; font-size: .94rem; }
-    .lead-form {
-      display: flex; flex-wrap: wrap; gap: 10px;
-      margin-top: 24px;
-    }
-    .lead-form input[type="email"] {
-      flex: 1; min-width: 180px;
-      background: var(--bg); border: 1px solid var(--border-2);
-      color: var(--heading); font-family: var(--body-f); font-size: .92rem;
-      padding: 0 18px; height: 52px; min-height: 44px;
-      outline: none; transition: border-color .18s;
-    }
-    .lead-form input:focus { border-color: var(--red-dim); }
-    .lead-form input::placeholder { color: var(--muted); }
-    .lead-note { font-size: .72rem; color: var(--muted); margin-top: 14px; display: block; }
-
-    .lead-mockup {
-      display: flex; align-items: center; justify-content: center;
-    }
-    .lead-mockup img {
-      max-height: 540px;
-      width: 100%;
-      object-fit: contain;
-      display: block;
-    }
-
     /* ── 6. PACKAGE LIST ─────────────────────── */
     .package-list {
       list-style: none;
@@ -597,14 +556,6 @@
       .hero-mockup img { max-height: 60vh; object-fit: contain; }
     }
 
-    @media (max-width: 720px) {
-      .lead-split {
-        grid-template-columns: 1fr;
-      }
-      .lead-mockup { order: 1; max-height: 320px; }
-      .lead-mockup img { max-height: 320px; }
-    }
-
     @media (max-width: 600px) {
       .footer-grid { grid-template-columns: 1fr; gap: 24px; }
     }
@@ -614,9 +565,7 @@
       .btn-primary, .btn-ghost { width: 100%; }
       .stats { flex-wrap: wrap; }
       .stat { flex: 0 0 50%; border-bottom: 1px solid var(--border); }
-      .lead-form { flex-direction: column; }
-      .lead-form input, .lead-form .btn-primary { width: 100%; }
-      .price-row { flex-direction: column; align-items: center; gap: 4px; }
+.price-row { flex-direction: column; align-items: center; gap: 4px; }
     }
   </style>
 </head>
@@ -661,7 +610,6 @@
 
           <div class="hero-actions reveal">
             <a class="btn-primary" href="https://pay.hotmart.com/Y105760960N" target="_blank" rel="noopener">Buch jetzt kaufen</a>
-            <a class="btn-ghost" href="#lead-magnet">Kostenlose Checkliste</a>
           </div>
 
           <div class="stats reveal" role="list" aria-label="Kennzahlen">
@@ -863,43 +811,6 @@
           </svg>
           Kindle
         </span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── 3. LEAD MAGNET — SPLIT ─────────────── -->
-  <section id="lead-magnet" aria-labelledby="lead-heading">
-    <div class="container">
-      <div class="lead-split">
-
-        <!-- Left: form -->
-        <div class="lead-content reveal">
-          <span class="eyebrow">Kostenlos</span>
-          <h2 class="d d-md lead-title" id="lead-heading">Die fünf Signale<br>eines Nutztier-Mannes</h2>
-          <p>Eine ehrliche Diagnose in fünf Minuten. Die kleinste Form des Audits aus Kapitel eins — sofort per Mail, ohne Konto, ohne Abonnement.</p>
-
-          <form class="lead-form" onsubmit="submitLead(event)" novalidate aria-label="Checkliste anfordern">
-            <label for="email-lead" class="sr-only">E-Mail-Adresse</label>
-            <input
-              type="email" id="email-lead" name="email"
-              placeholder="deine@email.de"
-              required autocomplete="email" aria-required="true"
-            />
-            <button type="submit" class="btn-primary" id="lead-btn">Anfordern</button>
-          </form>
-
-          <span class="lead-note" role="status" id="lead-status">Kein Spam. Kein Abonnement. Eine E-Mail, eine Datei.</span>
-        </div>
-
-        <!-- Right: mockup -->
-        <div class="lead-mockup reveal reveal-delay-2">
-          <img
-            src="mockup-iphone-hand.jpeg"
-            alt="Der Code des Schweigens auf einem iPhone, in einer Hand gehalten"
-            loading="lazy"
-          />
-        </div>
-
       </div>
     </div>
   </section>
@@ -1129,31 +1040,6 @@
       document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
     })();
 
-    /* ── Lead form ── */
-    function submitLead(e) {
-      e.preventDefault();
-      const btn    = document.getElementById('lead-btn');
-      const input  = e.target.querySelector('input[type="email"]');
-      const status = document.getElementById('lead-status');
-
-      if (!input.value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value)) {
-        status.textContent = 'Bitte gib eine gültige E-Mail-Adresse ein.';
-        status.style.color = 'var(--red)';
-        input.focus();
-        return;
-      }
-
-      btn.textContent = 'Wird gesendet…';
-      btn.disabled = true;
-      input.disabled = true;
-
-      /* → Replace with real endpoint (ConvertKit / Mailchimp / etc.) */
-      setTimeout(() => {
-        btn.textContent = 'Gesendet ✓';
-        status.textContent = 'Prüf dein Postfach — die Checkliste ist unterwegs.';
-        status.style.color = '#4caf50';
-      }, 1200);
-    }
   </script>
 
 </body>
