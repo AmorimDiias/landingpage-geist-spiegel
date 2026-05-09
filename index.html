@@ -166,10 +166,14 @@
 
     /* ── HERO ───────────────────────────────── */
     .hero {
-      padding: clamp(72px, 12vw, 140px) 0 clamp(56px, 8vw, 100px);
+      padding: clamp(20px, 3vh, 48px) 0 clamp(16px, 2.5vh, 36px);
+      min-height: calc(100vh - 64px);
+      display: flex;
+      align-items: center;
       border-top: none;
       position: relative;
     }
+    .hero > .container-wide { width: 100%; }
     .hero::before {
       content: '';
       position: absolute;
@@ -186,24 +190,24 @@
       align-items: center;
     }
 
-    .hero-kicker { margin-bottom: 28px; }
-    .hero-headline { margin-bottom: 32px; }
+    .hero-kicker { margin-bottom: 12px; }
+    .hero-headline { margin-bottom: 16px; }
 
     .hero-headline .line-1,
     .hero-headline .line-2 {
       font-family: var(--display);
-      font-size: clamp(2.8rem, 5.5vw, 5.2rem);
+      font-size: clamp(2rem, 3.2vw, 3.6rem);
       letter-spacing: .025em;
       line-height: .95;
       color: var(--white);
       display: block;
     }
-    .hero-headline .line-2 { margin-left: clamp(16px, 3vw, 40px); }
+    .hero-headline .line-2 { margin-left: clamp(12px, 2vw, 28px); }
 
     .hero-headline .line-red {
       display: block;
       font-family: var(--display);
-      font-size: clamp(2.8rem, 5.5vw, 5.2rem);
+      font-size: clamp(2rem, 3.2vw, 3.6rem);
       letter-spacing: .025em;
       line-height: 1;
       color: var(--red);
@@ -221,18 +225,18 @@
     }
 
     .hero-sub {
-      font-size: clamp(.9rem, 1.5vw, 1.02rem);
+      font-size: clamp(.82rem, 1.1vw, .95rem);
       color: var(--body);
       max-width: 50ch;
-      line-height: 1.75;
+      line-height: 1.6;
       margin-top: 0;
     }
 
     .hero-actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 36px;
+      gap: 10px;
+      margin-top: 20px;
       align-items: center;
     }
 
@@ -254,7 +258,7 @@
     }
     .hero-mockup img {
       width: 100%;
-      max-height: 720px;
+      max-height: min(520px, 58vh);
       object-fit: contain;
       position: relative;
       display: block;
@@ -292,8 +296,8 @@
     .btn-ghost:focus-visible { outline: 2px solid var(--muted); outline-offset: 3px; }
 
     /* ── STATS ROW ───────────────────────────── */
-    .stats { display: flex; border: 1px solid var(--border); margin-top: 48px; }
-    .stat { flex: 1; padding: 20px 16px; border-right: 1px solid var(--border); }
+    .stats { display: flex; border: 1px solid var(--border); margin-top: 24px; }
+    .stat { flex: 1; padding: 12px 14px; border-right: 1px solid var(--border); }
     .stat:last-child { border-right: none; }
     .stat-n {
       font-family: var(--display); font-size: clamp(1.8rem, 4vw, 2.6rem);
