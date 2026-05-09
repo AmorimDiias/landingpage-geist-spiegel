@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Der Code des Schweigens — Das Handbuch des strategischen Rückzugs | Geist Spiegel</title>
+  <meta name="description" content="Ein nüchternes Handbuch für Männer zwischen vierzig und sechzig. Der strategische Rückzug zur unangreifbaren Souveränität. PDF · EPUB · MOBI · DOCX." />
+  <link rel="canonical" href="https://geist-spiegel.de" />
+
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:title"       content="Der Code des Schweigens — Das Handbuch des strategischen Rückzugs" />
+  <meta property="og:description" content="Ein nüchternes Handbuch für Männer zwischen vierzig und sechzig, die wissen wollen, wie der strategische Rückzug zur unangreifbaren Souveränität wird." />
+  <meta property="og:image"       content="cover.jpeg" />
+  <meta property="og:url"         content="https://geist-spiegel.de" />
+  <meta property="og:site_name"   content="Geist Spiegel" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="Der Code des Schweigens — Geist Spiegel" />
+  <meta name="twitter:description" content="Ein nüchternes Handbuch für Männer zwischen vierzig und sechzig." />
+  <meta name="twitter:image"       content="cover.jpeg" />
+
+  <!-- Preload hero asset -->
+  <link rel="preload" as="image" href="mockup-hardcover-desk.jpeg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── TOKENS ─────────────────────────────────── */
+    :root {
+      --bg:       #080808;
+      --bg-2:     #0f0f0f;
+      --bg-3:     #161616;
+      --border:   #1e1e1e;
+      --border-2: #282828;
+      --muted:    #505050;
+      --body:     #929292;
+      --heading:  #efefef;
+      --white:    #ffffff;
+      --red:      #cc1f1f;
+      --red-h:    #e02222;
+      --red-dim:  #7a1212;
+      --red-glow: rgba(204,31,31,.12);
+
+      --display: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif;
+      --body-f:  'Source Sans 3', 'Source Sans Pro', system-ui, sans-serif;
+
+      --max:      760px;
+      --max-wide: 1120px;
+      --pad:      clamp(20px, 7vw, 80px);
+
+      --z-base:    10;
+      --z-overlay: 20;
+      --z-nav:     30;
+    }
+
+    /* ── RESET ─────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--body);
+      font-family: var(--body-f);
+      font-size: clamp(15px, 1.5vw, 17px);
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── GRAIN TEXTURE ───────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: .028;
+      pointer-events: none;
+      z-index: var(--z-overlay);
+    }
+
+    /* ── SCROLLBAR ───────────────────────────── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--red-dim); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--red); }
+
+    /* ── LAYOUT ──────────────────────────────── */
+    .container      { max-width: var(--max);      margin: 0 auto; padding: 0 var(--pad); }
+    .container-wide { max-width: var(--max-wide); margin: 0 auto; padding: 0 var(--pad); }
+
+    section { padding: clamp(64px, 11vw, 128px) 0; }
+    section + section { border-top: 1px solid var(--border); }
+
+    /* ── TYPOGRAPHY ─────────────────────────── */
+    .d     { font-family: var(--display); letter-spacing: .025em; line-height: 1; color: var(--white); }
+    .d-xl  { font-size: clamp(3.4rem, 10vw, 7.5rem); }
+    .d-lg  { font-size: clamp(2.6rem, 6.5vw, 5rem); }
+    .d-md  { font-size: clamp(2rem, 4.5vw, 3.4rem); }
+    .d-sm  { font-size: clamp(1.4rem, 2.5vw, 2rem); }
+
+    .eyebrow {
+      font-size: .68rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--red);
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 20px; height: 1px;
+      background: var(--red);
+    }
+
+    strong { color: var(--heading); font-weight: 600; }
+    p { margin-top: 1.15em; max-width: 68ch; }
+    p:first-child { margin-top: 0; }
+
+    /* ── SCROLL REVEAL ───────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .55s ease, transform .55s ease;
+    }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+    }
+
+    /* ── TOPBAR ─────────────────────────────── */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: var(--z-nav);
+      border-bottom: 1px solid var(--border);
+      background: rgba(8,8,8,.94);
+      backdrop-filter: blur(14px);
+      padding: 14px 0;
+    }
+    .topbar .inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .logo-wrap { display: inline-flex; align-items: center; gap: 11px; text-decoration: none; }
+    .logo-icon { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; overflow: hidden; display: block; }
+    .logo-icon img { width: 36px; height: 36px; border-radius: 50%; display: block; object-fit: cover; }
+    .logo-name { font-family: var(--display); font-size: 1.1rem; letter-spacing: .07em; color: var(--white); }
+
+    .nav-cta {
+      font-family: var(--body-f);
+      font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--white); text-decoration: none; background: var(--red);
+      padding: 10px 22px; transition: background .18s; cursor: pointer;
+      min-height: 44px; display: inline-flex; align-items: center;
+    }
+    .nav-cta:hover { background: var(--red-h); }
+    .nav-cta:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+
+    /* ── HERO ───────────────────────────────── */
+    .hero {
+      padding: clamp(72px, 12vw, 140px) 0 clamp(56px, 8vw, 100px);
+      border-top: none;
+      position: relative;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--red) 40%, transparent 100%);
+      opacity: .6;
+    }
+
+    /* 1. Split grid layout */
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: clamp(40px, 6vw, 80px);
+      align-items: center;
+    }
+
+    .hero-kicker { margin-bottom: 28px; }
+    .hero-headline { margin-bottom: 32px; }
+
+    .hero-headline .line-1,
+    .hero-headline .line-2 {
+      font-family: var(--display);
+      font-size: clamp(2.8rem, 5.5vw, 5.2rem);
+      letter-spacing: .025em;
+      line-height: .95;
+      color: var(--white);
+      display: block;
+    }
+    .hero-headline .line-2 { margin-left: clamp(16px, 3vw, 40px); }
+
+    .hero-headline .line-red {
+      display: block;
+      font-family: var(--display);
+      font-size: clamp(2.8rem, 5.5vw, 5.2rem);
+      letter-spacing: .025em;
+      line-height: 1;
+      color: var(--red);
+      margin-top: 4px;
+      position: relative;
+    }
+    .hero-headline .line-red::after {
+      content: '';
+      display: block;
+      height: 2px;
+      background: var(--red);
+      margin-top: 10px;
+      width: 60%;
+      opacity: .4;
+    }
+
+    .hero-sub {
+      font-size: clamp(.9rem, 1.5vw, 1.02rem);
+      color: var(--body);
+      max-width: 50ch;
+      line-height: 1.75;
+      margin-top: 0;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 36px;
+      align-items: center;
+    }
+
+    /* Hero mockup column */
+    .hero-mockup {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .hero-mockup::before {
+      content: '';
+      position: absolute;
+      inset: 20px -12px -12px 20px;
+      background: var(--red-dim);
+      opacity: .35;
+      filter: blur(32px);
+      pointer-events: none;
+    }
+    .hero-mockup img {
+      width: 100%;
+      max-height: 720px;
+      object-fit: contain;
+      position: relative;
+      display: block;
+    }
+
+    /* ── BUTTONS ─────────────────────────────── */
+    .btn-primary {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--red); color: var(--white);
+      font-family: var(--body-f); font-size: .76rem; font-weight: 600;
+      letter-spacing: .14em; text-transform: uppercase; text-decoration: none;
+      padding: 0 36px; height: 52px; min-height: 44px;
+      cursor: pointer; border: none;
+      transition: background .18s, box-shadow .18s;
+      position: relative; overflow: hidden;
+    }
+    .btn-primary::after {
+      content: ''; position: absolute; inset: 0;
+      background: rgba(255,255,255,.04); opacity: 0; transition: opacity .18s;
+    }
+    .btn-primary:hover { background: var(--red-h); box-shadow: 0 0 28px var(--red-glow); }
+    .btn-primary:hover::after { opacity: 1; }
+    .btn-primary:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+    .btn-primary:disabled { opacity: .6; cursor: not-allowed; }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--body); font-family: var(--body-f); font-size: .76rem; font-weight: 500;
+      letter-spacing: .1em; text-transform: uppercase; text-decoration: none;
+      padding: 0 24px; height: 52px; min-height: 44px;
+      border: 1px solid var(--border-2);
+      transition: border-color .18s, color .18s; cursor: pointer;
+    }
+    .btn-ghost:hover { border-color: var(--muted); color: var(--heading); }
+    .btn-ghost:focus-visible { outline: 2px solid var(--muted); outline-offset: 3px; }
+
+    /* ── STATS ROW ───────────────────────────── */
+    .stats { display: flex; border: 1px solid var(--border); margin-top: 48px; }
+    .stat { flex: 1; padding: 20px 16px; border-right: 1px solid var(--border); }
+    .stat:last-child { border-right: none; }
+    .stat-n {
+      font-family: var(--display); font-size: clamp(1.8rem, 4vw, 2.6rem);
+      color: var(--white); line-height: 1; letter-spacing: .03em; display: block;
+    }
+    .stat-n span { color: var(--red); }
+    .stat-l { font-size: .72rem; color: var(--muted); line-height: 1.5; margin-top: 4px; display: block; }
+
+    /* ── NARRATIVE ───────────────────────────── */
+    .narrative { position: relative; padding-left: 20px; border-left: 2px solid var(--red); }
+    .callout {
+      background: var(--bg-2); border: 1px solid var(--border); border-left: 3px solid var(--red);
+      padding: 28px 32px; margin: 36px 0;
+      font-size: clamp(.98rem, 1.8vw, 1.1rem); color: var(--heading); line-height: 1.6;
+    }
+
+    /* ── CHECKLIST ───────────────────────────── */
+    .criteria { list-style: none; margin-top: 28px; }
+    .criteria li {
+      display: grid; grid-template-columns: 28px 1fr; gap: 16px;
+      align-items: start; padding: 18px 0;
+      border-bottom: 1px solid var(--border); line-height: 1.65;
+    }
+    .criteria li:first-child { border-top: 1px solid var(--border); }
+    .criteria .num { font-family: var(--display); font-size: 1.5rem; color: var(--red); line-height: 1; padding-top: 2px; }
+    .criteria-neg .num { color: var(--border-2); }
+    .criteria-neg li { opacity: .6; }
+
+    /* ── CONTENT GRID ────────────────────────── */
+    .parts { display: grid; gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 40px; }
+    .part { background: var(--bg-2); padding: 32px 28px; transition: background .2s; cursor: default; }
+    .part:hover { background: var(--bg-3); }
+    .part-roman { font-family: var(--display); font-size: 4rem; color: var(--border-2); line-height: 1; display: block; margin-bottom: 10px; transition: color .2s; }
+    .part:hover .part-roman { color: var(--red-dim); }
+    .part-tag { font-size: .64rem; letter-spacing: .2em; text-transform: uppercase; color: var(--red); display: block; margin-bottom: 8px; }
+    .part-title { font-family: var(--display); font-size: 1.35rem; letter-spacing: .04em; color: var(--heading); display: block; margin-bottom: 10px; }
+    .part p { font-size: .88rem; color: var(--muted); line-height: 1.65; max-width: none; }
+
+    /* ── AUTHOR ─────────────────────────────── */
+    .author-card {
+      background: var(--bg-2); border: 1px solid var(--border);
+      padding: clamp(28px, 5vw, 52px);
+    }
+    .author-head { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+    .author-avatar {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: #181818; border: 1px solid var(--border-2);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .author-avatar svg { width: 28px; height: 28px; }
+    .author-name { font-family: var(--display); font-size: 1.5rem; letter-spacing: .04em; color: var(--heading); display: block; }
+    .author-sub { font-size: .76rem; color: var(--muted); }
+
+    /* 4. Author product shot */
+    .author-product-shot {
+      margin-top: 48px;
+      max-height: 480px;
+      width: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+    .author-product-caption {
+      margin-top: 10px;
+      font-size: .72rem;
+      color: var(--muted);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    /* ── 2. MULTI-DEVICE SECTION ─────────────── */
+    .device-img {
+      width: 100%;
+      max-height: 420px;
+      object-fit: contain;
+      display: block;
+      margin-top: 36px;
+      border: 1px solid var(--border);
+    }
+    .device-icons {
+      display: flex;
+      gap: clamp(24px, 5vw, 56px);
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+    .device-icon {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: .82rem;
+      color: var(--muted);
+    }
+    .device-icon svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    /* ── 3. LEAD MAGNET SPLIT ────────────────── */
+    .lead-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(32px, 5vw, 60px);
+      align-items: center;
+    }
+    .lead-content {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-top: 2px solid var(--red);
+      padding: clamp(32px, 5vw, 52px);
+    }
+    .lead-content .eyebrow { margin-bottom: 16px; }
+    .lead-title { margin: 0 0 10px; }
+    .lead-content p { max-width: 44ch; font-size: .94rem; }
+    .lead-form {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      margin-top: 24px;
+    }
+    .lead-form input[type="email"] {
+      flex: 1; min-width: 180px;
+      background: var(--bg); border: 1px solid var(--border-2);
+      color: var(--heading); font-family: var(--body-f); font-size: .92rem;
+      padding: 0 18px; height: 52px; min-height: 44px;
+      outline: none; transition: border-color .18s;
+    }
+    .lead-form input:focus { border-color: var(--red-dim); }
+    .lead-form input::placeholder { color: var(--muted); }
+    .lead-note { font-size: .72rem; color: var(--muted); margin-top: 14px; display: block; }
+
+    .lead-mockup {
+      display: flex; align-items: center; justify-content: center;
+    }
+    .lead-mockup img {
+      max-height: 540px;
+      width: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* ── 6. PACKAGE LIST ─────────────────────── */
+    .package-list {
+      list-style: none;
+      border: 1px solid var(--border);
+      margin-top: 32px;
+    }
+    .package-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 20px;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      align-items: start;
+    }
+    .package-item:last-child { border-bottom: none; }
+    .package-check {
+      font-family: var(--display);
+      font-size: 1.3rem;
+      color: var(--red);
+      line-height: 1.3;
+      flex-shrink: 0;
+    }
+    .package-title {
+      color: var(--heading);
+      font-weight: 500;
+      font-size: .96rem;
+      display: block;
+    }
+    .package-desc {
+      font-size: .82rem;
+      color: var(--muted);
+      margin-top: 3px;
+      display: block;
+    }
+
+    /* ── 7. FAQ ACCORDION ────────────────────── */
+    .faq { margin-top: 32px; }
+
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+    }
+    .faq-item:first-child { border-top: 1px solid var(--border); }
+
+    .faq-item summary {
+      padding: 20px 0;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      color: var(--heading);
+      font-size: .98rem;
+      font-weight: 500;
+      line-height: 1.4;
+      user-select: none;
+    }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary:focus-visible { outline: 1px solid var(--red); outline-offset: 2px; }
+
+    .faq-chevron {
+      flex-shrink: 0;
+      width: 18px; height: 18px;
+      border: 1px solid var(--border-2);
+      display: flex; align-items: center; justify-content: center;
+      transition: background .18s, border-color .18s;
+    }
+    .faq-chevron svg {
+      width: 10px; height: 10px;
+      stroke: var(--red);
+      transition: transform .22s ease;
+    }
+    .faq-item[open] summary .faq-chevron { background: var(--red-dim); border-color: var(--red-dim); }
+    .faq-item[open] summary .faq-chevron svg { transform: rotate(180deg); }
+
+    .faq-body {
+      padding: 4px 0 24px;
+      color: var(--body);
+      font-size: .94rem;
+      line-height: 1.7;
+      max-width: 64ch;
+    }
+
+    /* ── 5. FINAL CTA ────────────────────────── */
+    .final {
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .final::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url('mockup-hardcover-whiskey.jpeg');
+      background-size: cover;
+      background-position: center top;
+      opacity: .07;
+      filter: blur(3px);
+      pointer-events: none;
+    }
+    .final > .container { position: relative; z-index: 1; }
+
+    .price-row {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 8px;
+      margin: 36px 0 32px;
+    }
+    .price-currency { font-family: var(--display); font-size: 2rem; color: var(--muted); letter-spacing: .03em; }
+    .price-amount { font-family: var(--display); font-size: clamp(3.5rem, 8vw, 6rem); color: var(--white); letter-spacing: .02em; line-height: 1; }
+    .price-detail { font-size: .78rem; color: var(--muted); text-align: left; line-height: 1.7; align-self: center; }
+    .delivery { margin-top: 22px; font-size: .78rem; color: var(--muted); line-height: 1.9; }
+
+    /* ── DIVIDER ─────────────────────────────── */
+    .hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+    /* ── 8. FOOTER ───────────────────────────── */
+    footer { border-top: 1px solid var(--border); padding: 40px 0 28px; }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+    .footer-col-title {
+      font-family: var(--display);
+      font-size: .85rem;
+      letter-spacing: .12em;
+      color: var(--heading);
+      display: block;
+      margin-bottom: 14px;
+    }
+    footer p { font-size: .74rem; color: var(--muted); margin: 0 0 6px; }
+    footer a { color: var(--muted); text-decoration: none; font-size: .74rem; transition: color .18s; display: block; margin-bottom: 8px; }
+    footer a:hover { color: var(--body); }
+    footer a:focus-visible { outline: 1px solid var(--muted); outline-offset: 2px; }
+    .footer-bottom {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-size: .7rem;
+      color: var(--muted);
+    }
+
+    /* ── SR-ONLY ─────────────────────────────── */
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+
+    /* ── RESPONSIVE ─────────────────────────── */
+    @media (max-width: 860px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero-mockup {
+        order: -1;
+        max-height: 60vh;
+        overflow: hidden;
+      }
+      .hero-mockup img { max-height: 60vh; object-fit: contain; }
+    }
+
+    @media (max-width: 720px) {
+      .lead-split {
+        grid-template-columns: 1fr;
+      }
+      .lead-mockup { order: 1; max-height: 320px; }
+      .lead-mockup img { max-height: 320px; }
+    }
+
+    @media (max-width: 600px) {
+      .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+    }
+
+    @media (max-width: 520px) {
+      .hero-actions { flex-direction: column; }
+      .btn-primary, .btn-ghost { width: 100%; }
+      .stats { flex-wrap: wrap; }
+      .stat { flex: 0 0 50%; border-bottom: 1px solid var(--border); }
+      .lead-form { flex-direction: column; }
+      .lead-form input, .lead-form .btn-primary { width: 100%; }
+      .price-row { flex-direction: column; align-items: center; gap: 4px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── TOPBAR ──────────────────────────────── -->
+  <header class="topbar" role="banner">
+    <div class="container-wide inner">
+      <a class="logo-wrap" href="#" aria-label="Geist Spiegel — zur Startseite">
+        <div class="logo-icon" aria-hidden="true">
+          <img src="logo.png" alt="" width="36" height="36" />
+        </div>
+        <span class="logo-name">Geist Spiegel</span>
+      </a>
+      <a class="nav-cta" href="https://pay.hotmart.com/Y105760960N" target="_blank" rel="noopener">Buch kaufen</a>
+    </div>
+  </header>
+
+  <main>
+
+  <!-- ── 1. HERO — SPLIT LAYOUT ─────────────── -->
+  <section class="hero" aria-labelledby="hero-headline">
+    <div class="container-wide">
+      <div class="hero-grid">
+
+        <!-- Left: text content -->
+        <div class="hero-content">
+          <div class="hero-kicker reveal">
+            <span class="eyebrow">Der Code des Schweigens</span>
+          </div>
+
+          <div class="hero-headline" id="hero-headline" aria-label="Es gibt eine Sekunde, in der du aufhörst zu kämpfen.">
+            <span class="line-1 reveal reveal-delay-1">Es gibt eine</span>
+            <span class="line-2 reveal reveal-delay-2">Sekunde, in der</span>
+            <span class="line-2 reveal reveal-delay-2" style="margin-left:0">du aufhörst</span>
+            <span class="line-red reveal reveal-delay-3">zu kämpfen.</span>
+          </div>
+
+          <p class="hero-sub reveal reveal-delay-3">
+            Ein nüchternes Handbuch für Männer zwischen vierzig und sechzig — die längst gemerkt haben, dass die alten Regeln nicht mehr für sie geschrieben sind. Und die wissen wollen, wie der strategische Rückzug zur unangreifbaren Souveränität wird.
+          </p>
+
+          <div class="hero-actions reveal">
+            <a class="btn-primary" href="https://pay.hotmart.com/Y105760960N" target="_blank" rel="noopener">Buch jetzt kaufen</a>
+            <a class="btn-ghost" href="#lead-magnet">Kostenlose Checkliste</a>
+          </div>
+
+          <div class="stats reveal" role="list" aria-label="Kennzahlen">
+            <div class="stat" role="listitem">
+              <span class="stat-n">23<span>M</span></span>
+              <span class="stat-l">Männer, die jetzt dieselbe Schlussfolgerung ziehen</span>
+            </div>
+            <div class="stat" role="listitem">
+              <span class="stat-n">15</span>
+              <span class="stat-l">Kapitel in drei Teilen</span>
+            </div>
+            <div class="stat" role="listitem">
+              <span class="stat-n">110</span>
+              <span class="stat-l">Seiten ohne Füllmaterial</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: hero mockup -->
+        <div class="hero-mockup reveal reveal-delay-2">
+          <img
+            src="mockup-hardcover-desk.jpeg"
+            alt="Der Code des Schweigens — Hardcover-Edition auf einem Schreibtisch"
+            loading="eager"
+            fetchpriority="high"
+          />
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── NARRATIVE ─────────────────────────── -->
+  <section aria-label="Das erste Blatt">
+    <div class="container">
+      <span class="eyebrow reveal">Das erste Blatt</span>
+      <hr class="hr" style="margin-top: 20px;">
+      <div class="narrative reveal">
+        <p>Während du das hier liest, löscht ein ganz normaler Mann zum dritten Mal in diesem Jahr seine Dating-App. Er heißt nicht Stefan, oder doch, vielleicht heißt er so. Er sitzt um dreiundzwanzig Uhr siebenundvierzig in seiner Küche. Er hat sechs Monate investiert, zweihundertdrei Nachrichten geschrieben, ein einziges Date erlebt, bei dem er nur als Stütze für ein Handydisplay gedient hat.</p>
+        <p>Was ihn antreibt, ist nicht Wut.</p>
+        <p>Es ist eine <strong>eiskalte, kalkulierte Erschöpfung.</strong></p>
+        <p>Dreiundzwanzig Millionen Männer allein in den Vereinigten Staaten kommen genau in diesem Augenblick zur selben Schlussfolgerung. In der DACH-Region läuft dieselbe Bewegung, mit drei bis fünf Jahren Verzögerung — aber mit derselben Mathematik darunter.</p>
+      </div>
+      <div class="callout reveal">
+        Die Frage, die kein Magazin offen stellt:<br>
+        <strong>Was passiert, wenn du selbst an diesem Punkt bist?</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOR WHOM ───────────────────────────── -->
+  <section aria-labelledby="for-whom-heading">
+    <div class="container">
+      <span class="eyebrow reveal">Für wen</span>
+      <h2 class="d d-md reveal" id="for-whom-heading" style="margin-top: 16px;">Du erkennst dich, wenn:</h2>
+
+      <ul class="criteria reveal" aria-label="Kriterien">
+        <li>
+          <span class="num" aria-hidden="true">1</span>
+          <span>Du gemerkt hast, dass deine Reaktionszeit auf Nachrichten leiser geworden ist — ohne dass dir jemand gesagt hat, dass das ein Anfang sein kann.</span>
+        </li>
+        <li>
+          <span class="num" aria-hidden="true">2</span>
+          <span>Du beim Frühstück allein mehr Frieden findest als bei familiären Pflichtterminen — ohne dieses Gefühl jemandem ehrlich zugeben zu können.</span>
+        </li>
+        <li>
+          <span class="num" aria-hidden="true">3</span>
+          <span>Du Beziehungen, Anfragen, Verpflichtungen filterst — ohne dir bisher erlaubt zu haben, die Filterung als Souveränität statt als Krise zu verstehen.</span>
+        </li>
+        <li>
+          <span class="num" aria-hidden="true">4</span>
+          <span>Du gemerkt hast, dass die Energie, die du jahrzehntelang in externe Bestätigung investiert hast, in keiner Bilanz mehr aufgeht.</span>
+        </li>
+        <li>
+          <span class="num" aria-hidden="true">5</span>
+          <span>Du das Gefühl hast, dass das alte Spiel mit gezinkten Karten gespielt wird — und du keine Lust mehr hast, am Tisch Platz zu nehmen.</span>
+        </li>
+      </ul>
+
+      <p style="margin-top: 28px; color: var(--red); font-weight: 500;" class="reveal">
+        Wenn drei dieser fünf Sätze zutreffen, ist dieses Buch für dich.
+      </p>
+
+      <hr class="hr" style="margin-top: 44px;">
+      <span class="eyebrow reveal" style="color: var(--muted);">Für wen nicht</span>
+      <p class="reveal" style="margin-top: 20px;">Wenn du noch hoffst, dass die nächste Beziehung anders wird, wenn du nur disziplinierter bist. Wenn du glaubst, dass mehr Selbstoptimierung dich endlich zur Spitze der Pyramide bringt. Wenn du Pickup-Manuale, Wellness-Coaching oder die nächste Manifestations-Methode suchst.</p>
+      <p class="reveal">Dann zahl deinen Preis nicht hierfür. Es gibt Märkte für jede dieser Erzählungen — und sie verkaufen besser als das Buch, das du hier nicht kaufen sollst.</p>
+    </div>
+  </section>
+
+  <!-- ── CONTENT ────────────────────────────── -->
+  <section aria-labelledby="parts-heading">
+    <div class="container">
+      <span class="eyebrow reveal">Was du bekommst</span>
+      <h2 class="d d-md reveal" id="parts-heading" style="margin-top: 16px;">Drei Teile.<br>Eine Architektur.</h2>
+
+      <div class="parts" role="list">
+        <article class="part reveal" role="listitem">
+          <span class="part-roman" aria-hidden="true">I</span>
+          <span class="part-tag">5 Kapitel — Die Diagnose</span>
+          <span class="part-title">Das Spielbrett seziert</span>
+          <p>Die Mathematik der Pyramide. Der zerrissene Vertrag. Die Bestrafung der Verlässlichkeit. Die Pathologisierung deiner Wahrnehmung. Mit kalter Präzision aufgezeichnet, ohne Pathos.</p>
+        </article>
+        <article class="part reveal reveal-delay-1" role="listitem">
+          <span class="part-roman" aria-hidden="true">II</span>
+          <span class="part-tag">4 Kapitel — Das Verschwinden</span>
+          <span class="part-title">Der Moment, an dem du den Hahn zudrehst</span>
+          <p>Der neurologische Moment des Rückzugs. Die drei stillen Zeichen, die Wochen vorher auftauchen. Die Reaktion der äußeren Welt. Der Übergang von der Wut zur kalten Klarheit.</p>
+        </article>
+        <article class="part reveal reveal-delay-2" role="listitem">
+          <span class="part-roman" aria-hidden="true">III</span>
+          <span class="part-tag">5 Kapitel — Die Architektur</span>
+          <span class="part-title">Der Aufbau der inneren Festung</span>
+          <p>Die fünf Säulen der täglichen Praxis. Finanzielle Blindierung für die DACH-Region. Strategische Gleichgültigkeit als operatives Werkzeug. Souveräne Beziehungen. Der Plan 2035.</p>
+        </article>
+        <article class="part reveal reveal-delay-3" role="listitem">
+          <span class="part-roman" aria-hidden="true">+</span>
+          <span class="part-tag">Anhang — 30 Tage</span>
+          <span class="part-title">Tagebuch der Aktivierung</span>
+          <p>Leitsatz, Übung und Tagesfrage pro Tag, mit handschriftlichen Zeilen. Vier Phasen: Audit — Corte — Aufbau — Konsolidierung.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── AUTHOR ─────────────────────────────── -->
+  <section aria-labelledby="author-heading">
+    <div class="container">
+      <span class="eyebrow reveal">Über den Autor</span>
+      <hr class="hr" style="margin-top: 20px;">
+
+      <div class="author-card reveal">
+        <div class="author-head">
+          <div class="author-avatar" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 3C9.5 3 7.5 4.5 7 6.5C5.5 7 4 8.5 4 10.5C4 12 4.8 13.3 6 14C6 16.2 7.8 18 10 18H14C16.2 18 18 16.2 18 14C19.2 13.3 20 12 20 10.5C20 8.5 18.5 7 17 6.5C16.5 4.5 14.5 3 12 3Z" stroke="#efefef" stroke-width="1.3" stroke-linejoin="round"/>
+              <path d="M12 3V18M9 8.5C9.5 9.3 10.6 9.8 12 9.8C13.4 9.8 14.5 9.3 15 8.5M7 12H10M14 12H17" stroke="#efefef" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <span class="author-name" id="author-heading">Geist Spiegel</span>
+            <span class="author-sub">@geistspiegel · YouTube DACH</span>
+          </div>
+        </div>
+        <p>Geist Spiegel ist ein Spiegel für den Geist — für all das, was er vor dir verbirgt. Der Kanal ist seit über einem Jahr eine der präzisesten Stimmen für Männer im DACH-Raum, die in einer modernen Welt, die ihnen widerspricht, ihre eigene Architektur bauen wollen.</p>
+        <p>Die Videos werden in Deutschland, Österreich und der Schweiz von Männern zwischen fünfundvierzig und fünfundsechzig gehört, die längst aufgehört haben, in den vorgegebenen Skripten zu suchen.</p>
+        <p>Dieses Buch ist nicht die Wiederholung der Videos. Es ist die Konzentration ihrer Substanz — in einem Format, das du langsam, allein, ohne Algorithmus, ohne Like-Button konsumieren kannst.</p>
+      </div>
+
+      <!-- 4. Product shot below author card -->
+      <div class="reveal">
+        <img
+          class="author-product-shot"
+          src="mockup-hardcover-whiskey.jpeg"
+          alt="Der Code des Schweigens — Hardcover-Edition mit Whiskeyglas und Füllfeder"
+          loading="lazy"
+        />
+        <p class="author-product-caption">Der Code des Schweigens — als Hardcover-Edition</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 2. AUF JEDEM GERÄT ─────────────────── -->
+  <section aria-labelledby="devices-heading">
+    <div class="container">
+      <span class="eyebrow reveal">Multi-Device</span>
+      <h2 class="d d-md reveal" id="devices-heading" style="margin-top: 16px;">Liest auf allem,<br>was du besitzt.</h2>
+
+      <p class="reveal" style="margin-top: 16px;">
+        PDF für klassisches Lesen. EPUB für Apple Books, Google Play Books, Kobo. MOBI für Kindle. Alles ohne DRM, ohne Konto, ohne Algorithmus.
+      </p>
+
+      <img
+        class="device-img reveal"
+        src="mockup-multi-device.jpeg"
+        alt="Der Code des Schweigens auf iPhone, iPad und Kindle gleichzeitig — Geist Spiegel Digital Editions"
+        loading="lazy"
+      />
+
+      <div class="device-icons reveal">
+        <!-- Smartphone -->
+        <span class="device-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="5" y="2" width="14" height="20" rx="2"/>
+            <circle cx="12" cy="17" r="1" fill="currentColor"/>
+          </svg>
+          Smartphone
+        </span>
+        <!-- Tablet -->
+        <span class="device-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="2" width="18" height="20" rx="2"/>
+            <circle cx="12" cy="17.5" r=".75" fill="currentColor"/>
+          </svg>
+          Tablet
+        </span>
+        <!-- E-reader / Kindle -->
+        <span class="device-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+          Kindle
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 3. LEAD MAGNET — SPLIT ─────────────── -->
+  <section id="lead-magnet" aria-labelledby="lead-heading">
+    <div class="container">
+      <div class="lead-split">
+
+        <!-- Left: form -->
+        <div class="lead-content reveal">
+          <span class="eyebrow">Kostenlos</span>
+          <h2 class="d d-md lead-title" id="lead-heading">Die fünf Signale<br>eines Nutztier-Mannes</h2>
+          <p>Eine ehrliche Diagnose in fünf Minuten. Die kleinste Form des Audits aus Kapitel eins — sofort per Mail, ohne Konto, ohne Abonnement.</p>
+
+          <form class="lead-form" onsubmit="submitLead(event)" novalidate aria-label="Checkliste anfordern">
+            <label for="email-lead" class="sr-only">E-Mail-Adresse</label>
+            <input
+              type="email" id="email-lead" name="email"
+              placeholder="deine@email.de"
+              required autocomplete="email" aria-required="true"
+            />
+            <button type="submit" class="btn-primary" id="lead-btn">Anfordern</button>
+          </form>
+
+          <span class="lead-note" role="status" id="lead-status">Kein Spam. Kein Abonnement. Eine E-Mail, eine Datei.</span>
+        </div>
+
+        <!-- Right: mockup -->
+        <div class="lead-mockup reveal reveal-delay-2">
+          <img
+            src="mockup-iphone-hand.jpeg"
+            alt="Der Code des Schweigens auf einem iPhone, in einer Hand gehalten"
+            loading="lazy"
+          />
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 6. WAS DU BEIM KAUF BEKOMMST ──────── -->
+  <section aria-labelledby="package-heading">
+    <div class="container">
+      <span class="eyebrow reveal">Im Paket enthalten</span>
+      <h2 class="d d-md reveal" id="package-heading" style="margin-top: 16px;">Was du heute<br>beim Kauf bekommst.</h2>
+
+      <ul class="package-list reveal" aria-label="Lieferumfang">
+        <li class="package-item">
+          <span class="package-check" aria-hidden="true">✓</span>
+          <div>
+            <span class="package-title">Hauptbuch — Der Code des Schweigens</span>
+            <span class="package-desc">PDF + EPUB + MOBI + DOCX — alle Formate, ein Kauf</span>
+          </div>
+        </li>
+        <li class="package-item">
+          <span class="package-check" aria-hidden="true">✓</span>
+          <div>
+            <span class="package-title">Aktivierungs-Tagebuch — 30 Tage</span>
+            <span class="package-desc">Interaktives PDF zum Ausdrucken oder digitalen Ausfüllen</span>
+          </div>
+        </li>
+        <li class="package-item">
+          <span class="package-check" aria-hidden="true">✓</span>
+          <div>
+            <span class="package-title">Lead Magnet — Die fünf Signale eines Nutztier-Mannes</span>
+            <span class="package-desc">Das Diagnose-Dokument aus Kapitel eins, vollständig</span>
+          </div>
+        </li>
+        <li class="package-item">
+          <span class="package-check" aria-hidden="true">✓</span>
+          <div>
+            <span class="package-title">Lebenslange Updates</span>
+            <span class="package-desc">Neue Auflagen gehen automatisch und kostenlos an alle Käufer</span>
+          </div>
+        </li>
+        <li class="package-item">
+          <span class="package-check" aria-hidden="true">✓</span>
+          <div>
+            <span class="package-title">Sofort-Download</span>
+            <span class="package-desc">Keine Wartezeit, keine Konto-Erstellung, kein Abonnement</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── 7. FAQ ─────────────────────────────── -->
+  <section aria-labelledby="faq-heading">
+    <div class="container">
+      <span class="eyebrow reveal">Häufige Fragen</span>
+      <h2 class="d d-md reveal" id="faq-heading" style="margin-top: 16px;">FAQ</h2>
+
+      <div class="faq reveal" role="list">
+
+        <details class="faq-item" role="listitem">
+          <summary>
+            Wie bekomme ich das Buch nach dem Kauf?
+            <span class="faq-chevron" aria-hidden="true">
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M2 4l4 4 4-4"/>
+              </svg>
+            </span>
+          </summary>
+          <div class="faq-body">
+            Sofort nach Zahlungsbestätigung erhältst du eine E-Mail mit den Download-Links für alle Formate. Der Zugang läuft nicht ab.
+          </div>
+        </details>
+
+        <details class="faq-item" role="listitem">
+          <summary>
+            Funktioniert es auf meinem Kindle?
+            <span class="faq-chevron" aria-hidden="true">
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M2 4l4 4 4-4"/>
+              </svg>
+            </span>
+          </summary>
+          <div class="faq-body">
+            Ja. Die MOBI-Datei ist kompatibel mit allen Kindle-Geräten und der Kindle-App auf iOS und Android.
+          </div>
+        </details>
+
+        <details class="faq-item" role="listitem">
+          <summary>
+            Gibt es eine Geld-zurück-Garantie?
+            <span class="faq-chevron" aria-hidden="true">
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M2 4l4 4 4-4"/>
+              </svg>
+            </span>
+          </summary>
+          <div class="faq-body">
+            14 Tage gemäß deutschem Verbraucherrecht. Wenn das Buch nicht zu dir passt, schreib eine E-Mail an hello@geist-spiegel.de — ohne Diskussion.
+          </div>
+        </details>
+
+        <details class="faq-item" role="listitem">
+          <summary>
+            Werden meine Daten weitergegeben?
+            <span class="faq-chevron" aria-hidden="true">
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M2 4l4 4 4-4"/>
+              </svg>
+            </span>
+          </summary>
+          <div class="faq-body">
+            Nein. Geist Spiegel teilt keine Daten mit Dritten. Die Verarbeitung erfolgt DSGVO-konform.
+          </div>
+        </details>
+
+        <details class="faq-item" role="listitem">
+          <summary>
+            Bekomme ich kostenlose Updates?
+            <span class="faq-chevron" aria-hidden="true">
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M2 4l4 4 4-4"/>
+              </svg>
+            </span>
+          </summary>
+          <div class="faq-body">
+            Ja. Jede neue Auflage geht automatisch an alle bisherigen Käufer — ohne erneuten Kauf, ohne Mehrkosten.
+          </div>
+        </details>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 5. FINAL CTA (ghost bg) ────────────── -->
+  <section id="kaufen" class="final" aria-labelledby="cta-heading">
+    <div class="container">
+
+      <span class="eyebrow reveal" style="justify-content: center;">Deine Entscheidung</span>
+
+      <h2 class="d d-lg reveal" id="cta-heading" style="margin-top: 20px;">
+        Tritt durch die Tür.
+      </h2>
+      <div class="d d-lg reveal reveal-delay-1" style="color: var(--red);">
+        Sie schließt sich<br>nur einmal.
+      </div>
+
+      <p class="reveal reveal-delay-2" style="max-width: 46ch; margin: 24px auto 0; font-size: .95rem;">
+        Dieses Buch verspricht dir nichts. Es zeigt dir die Mathematik unter dem Spiel — und die Architektur, mit der du die nächsten neun Jahre durchläufst, ohne dich aufzulösen.
+      </p>
+
+      <div class="price-row reveal reveal-delay-3" aria-label="Preis: 19 Euro">
+        <span class="price-currency" aria-hidden="true">€</span>
+        <span class="price-amount" aria-hidden="true">19</span>
+        <div class="price-detail" aria-hidden="true">
+          PDF + EPUB + MOBI + DOCX<br>
+          Sofort lieferbar nach Zahlung<br>
+          Lebenslange Updates inklusive
+        </div>
+      </div>
+
+      <a
+        class="btn-primary reveal"
+        href="https://pay.hotmart.com/Y105760960N"
+        target="_blank" rel="noopener"
+        style="font-size: .78rem; height: 60px; padding: 0 52px; letter-spacing: .16em;"
+        aria-label="Buch jetzt kaufen: Der Code des Schweigens für 19 Euro"
+      >
+        Buch jetzt kaufen — DER CODE DES SCHWEIGENS
+      </a>
+
+      <p class="delivery reveal">
+        Kein Abonnement. Keine versteckten Kosten.<br>
+        Eine einzige, klare Transaktion.
+      </p>
+
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ── 8. FOOTER — 3 COLUMNS ─────────────── -->
+  <footer role="contentinfo">
+    <div class="container">
+      <div class="footer-grid">
+
+        <!-- Col 1: Brand + contact -->
+        <div>
+          <span class="footer-col-title">Geist Spiegel</span>
+          <p>© 2026 Geist Spiegel.<br>Alle Rechte vorbehalten.</p>
+          <a href="mailto:hello@geist-spiegel.de" style="margin-top: 10px;">hello@geist-spiegel.de</a>
+        </div>
+
+        <!-- Col 2: Social -->
+        <div>
+          <span class="footer-col-title">Folge dem Kanal</span>
+          <a href="https://www.youtube.com/@geistspiegel" target="_blank" rel="noopener noreferrer">
+            YouTube — @geistspiegel
+          </a>
+          <a href="mailto:hello@geist-spiegel.de">E-Mail-Kontakt</a>
+        </div>
+
+        <!-- Col 3: Legal -->
+        <div>
+          <span class="footer-col-title">Rechtliches</span>
+          <a href="#">Impressum</a>
+          <a href="#">Datenschutzerklärung</a>
+          <a href="#">AGB</a>
+          <a href="#">Widerrufsrecht</a>
+        </div>
+
+      </div>
+
+      <p class="footer-bottom">
+        Der Code des Schweigens ist ein digitales Informationsprodukt. Kein medizinischer oder rechtlicher Rat.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    /* ── Scroll reveal ── */
+    (function () {
+      const obs = new IntersectionObserver(
+        (entries) => entries.forEach(e => {
+          if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
+        }),
+        { threshold: 0.08, rootMargin: '0px 0px -32px 0px' }
+      );
+      document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+    })();
+
+    /* ── Lead form ── */
+    function submitLead(e) {
+      e.preventDefault();
+      const btn    = document.getElementById('lead-btn');
+      const input  = e.target.querySelector('input[type="email"]');
+      const status = document.getElementById('lead-status');
+
+      if (!input.value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value)) {
+        status.textContent = 'Bitte gib eine gültige E-Mail-Adresse ein.';
+        status.style.color = 'var(--red)';
+        input.focus();
+        return;
+      }
+
+      btn.textContent = 'Wird gesendet…';
+      btn.disabled = true;
+      input.disabled = true;
+
+      /* → Replace with real endpoint (ConvertKit / Mailchimp / etc.) */
+      setTimeout(() => {
+        btn.textContent = 'Gesendet ✓';
+        status.textContent = 'Prüf dein Postfach — die Checkliste ist unterwegs.';
+        status.style.color = '#4caf50';
+      }, 1200);
+    }
+  </script>
+
+</body>
+</html>
